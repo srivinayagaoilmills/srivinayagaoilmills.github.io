@@ -699,7 +699,7 @@ function head(title, id) { return `<div class="dr-head"><h3 id="${id}">${esc(tit
 
 /* ---------- UPI pay card (shows only the default UPI ID the owner chose) ---------- */
 let upiInfo, qrLoad;
-function loadQR() { return qrLoad || (qrLoad = new Promise((ok, no) => { if (window.qrcode) return ok(); const el = document.createElement('script'); el.src = 'js/qr.js?v=20261012b'; el.onload = ok; el.onerror = no; document.head.appendChild(el); })); }
+function loadQR() { return qrLoad || (qrLoad = new Promise((ok, no) => { if (window.qrcode) return ok(); const el = document.createElement('script'); el.src = 'js/qr.js?v=20261012c'; el.onload = ok; el.onerror = no; document.head.appendChild(el); })); }
 async function fillUpi(o) {
   const box = $('#upiCard'); if (!box) return;
   try {
@@ -763,7 +763,7 @@ if (isIOS) document.addEventListener('DOMContentLoaded', showInstall);
 
 /* ---------- invoice ---------- */
 let invLib;
-function loadInvoice() { return invLib || (invLib = new Promise((ok, no) => { if (window.SVInvoice) return ok(); const el = document.createElement('script'); el.src = 'js/invoice.js?v=20261012b'; el.onload = ok; el.onerror = () => { invLib = null; no(); }; document.head.appendChild(el); })); }
+function loadInvoice() { return invLib || (invLib = new Promise((ok, no) => { if (window.SVInvoice) return ok(); const el = document.createElement('script'); el.src = 'js/invoice.js?v=20261012c'; el.onload = ok; el.onerror = () => { invLib = null; no(); }; document.head.appendChild(el); })); }
 function invBtns(no) {
   const b = (l, c, tx) => `<button type="button" class="${c}" data-inv="${esc(no)}" data-il="${l}">${esc(tx)}</button>`;
   return `<span class="inv-row">${lang === 'ta' ? b('ask', 'link', t('invDl')) : b('en', 'link', t('invDl')) + b('ta', 'link sm', t('invTa'))}</span>`;

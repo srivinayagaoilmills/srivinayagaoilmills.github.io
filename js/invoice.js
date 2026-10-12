@@ -124,6 +124,32 @@
 
   const load = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => no(new Error('load ' + src)); document.head.appendChild(s); });
   let libs;
+  const renderCanvas = async (sheet) => {
+      /* html2canvas measures each font's baseline in a hidden box inside the live page, which inherits the page's line-height; with a tall page line-height every line is then drawn about half-leading too low. Measuring with a normal line-height keeps text exactly where the browser puts it (the invoice sheet sets its own line-height, so its layout does not change). */
+      const de = document.documentElement, bd = document.body, lhDe = de.style.lineHeight, lhBd = bd.style.lineHeight;
+      de.style.lineHeight = 'normal'; bd.style.lineHeight = 'normal';
+      let canvas;
+      /* html2canvas still places each baseline a little low (its probe adds the 1px image and rounds); measure that same probe per font and take the excess back off at draw time */
+      const proto = CanvasRenderingContext2D.prototype, origFill = proto.fillText, fix = {};
+      const GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      const excess = (ctx) => {
+        const f = ctx.font;
+        if (fix[f] !== undefined) return fix[f];
+        const box = document.createElement('div'), sp = document.createElement('span'), im = document.createElement('img');
+        box.style.cssText = 'visibility:hidden;margin:0;padding:0;white-space:nowrap;position:absolute;left:-10000px;top:0;font:' + f;
+        sp.style.cssText = 'margin:0;padding:0;font:' + f; sp.textContent = 'Hidden Text';
+        im.src = GIF; im.width = 1; im.height = 1; im.style.cssText = 'margin:0;padding:0;vertical-align:baseline';
+        box.appendChild(sp); box.appendChild(im); document.body.appendChild(box);
+        const used = im.offsetTop - sp.offsetTop + 2;
+        document.body.removeChild(box);
+        const asc = ctx.measureText('Hxg').fontBoundingBoxAscent;
+        return (fix[f] = (asc && isFinite(asc)) ? used - asc : 0);
+      };
+      proto.fillText = function (t, x, y, w) { return origFill.call(this, t, x, y - excess(this), w); };
+      try { canvas = await window.html2canvas(sheet, { scale: 2.4, backgroundColor: '#ffffff', useCORS: true, logging: false }); }
+      finally { proto.fillText = origFill; de.style.lineHeight = lhDe; bd.style.lineHeight = lhBd; }
+      return canvas;
+  };
   const ensureLibs = () => libs || (libs = Promise.all([window.html2canvas ? 0 : load('js/vendor/html2canvas.min.js'), window.jspdf ? 0 : load('js/vendor/jspdf.umd.min.js')]));
 
   async function toPdf(d, lang, opt) {
@@ -143,7 +169,7 @@
         await document.fonts.ready;
       }
       const sheet = host.firstElementChild;
-      const canvas = await window.html2canvas(sheet, { scale: 2.4, backgroundColor: '#ffffff', useCORS: true, logging: false });
+      const canvas = await renderCanvas(sheet);
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
       const pw = 210, ph = 297, pxPerMm = canvas.width / pw, pagePx = Math.floor(ph * pxPerMm);
@@ -181,5 +207,5 @@
     setTimeout(() => fr.remove(), 60000);
     return true;
   }
-  window.SVInvoice = { build, toPdf, printFallback, TXT, tamilLabel };
+  window.SVInvoice = { build, toPdf, renderCanvas, printFallback, TXT, tamilLabel };
 })();
