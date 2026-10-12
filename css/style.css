@@ -802,3 +802,5 @@ html[lang="ta"] .fest-card p{font-family:var(--f-ta)}
 .upi .upi-pay{display:flex;align-items:center;justify-content:center;min-height:48px;margin:0 0 14px}
 
 a.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center}
+/* Tamil opening-hours text is long: keep it from running into the centred message */
+@media (min-width:901px) and (max-width:2100px){html[lang="ta"] .tb-hours{display:none}}
