@@ -1,0 +1,37 @@
+/* Oil pages (p/*.html). Uses the shop's colours and fonts from style.css */
+.pp-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;max-width:1080px;margin:0 auto;padding:18px 20px}
+.pp-back{color:var(--brand);font-weight:500;text-decoration:none}
+.pp-tools{display:flex;align-items:center;gap:14px}
+.pp-cart{color:var(--ink);text-decoration:none;font-weight:500;display:inline-flex;gap:6px;align-items:center}
+.pp-cart b{background:var(--brand);color:var(--on-brand);border-radius:99px;min-width:20px;height:20px;padding:0 6px;font-size:12px;display:inline-flex;align-items:center;justify-content:center}
+.pp-cart b[hidden]{display:none}
+.pp-top .lang{display:flex;border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.pp-top .lang button{border:0;background:transparent;padding:6px 14px;font-size:14px;color:var(--ink);cursor:pointer}
+.pp-top .lang button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand)}
+.pp-main{max-width:1080px;margin:0 auto;padding:0 20px 72px}
+.pp-crumb{font-size:14px;color:var(--muted);margin:4px 0 22px}.pp-crumb a{color:var(--muted)}
+.pp-banner{position:relative;border-radius:20px;overflow:hidden;background:#1F4A38;min-height:200px}
+.pp-banner img{display:block;width:100%;height:clamp(220px,31vw,360px);object-fit:cover;object-position:78% center}
+.pp-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(18,38,28,.82) 0%,rgba(18,38,28,.55) 38%,rgba(18,38,28,0) 68%)}
+.pp-banner-txt{position:absolute;z-index:1;left:clamp(18px,4vw,48px);top:50%;transform:translateY(-50%);max-width:46%;color:#F5F6F1}
+.pp-banner-txt h1{font-size:clamp(34px,5vw,60px);line-height:1.05;margin:0;color:#FBF6E8}
+.pp-banner-txt .pp-alt{color:#E8D9A8;margin:6px 0 12px}
+.pp-banner-txt .use{display:inline-block;border-radius:99px;padding:4px 14px;background:rgba(251,246,232,.16);color:#FBF6E8;border:1px solid rgba(251,246,232,.35)}
+.pp-hero{display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,4vw,48px);align-items:center;margin-top:clamp(22px,3vw,36px)}
+.pp-pic{background:none;padding:0;display:flex;justify-content:center}
+.pp-pic img{height:clamp(220px,24vw,300px);width:auto;display:block}
+.pp-alt{color:var(--muted);margin:6px 0 14px;font-size:18px}
+.pp-blurb{font-size:18px;margin:0 0 18px;max-width:48ch}
+.pp-buy{display:grid;gap:14px}
+.pp-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.pp-row .price{font:600 28px var(--f-body,inherit);min-width:92px}
+.pp-msg{color:var(--brand);font-weight:500}.pp-msg a{margin-left:8px}
+.pp-wait{color:var(--muted)}
+.pp-sec{margin-top:clamp(36px,5vw,60px);max-width:760px}
+.pp-sec h2{font-size:clamp(26px,3.4vw,36px);margin:0 0 14px}
+.pp-list{margin:0;padding:0 0 0 20px;display:grid;gap:8px;font-size:17px}
+.pp-others{display:flex;flex-wrap:wrap;gap:10px}
+.pp-others a{border:1px solid var(--line);border-radius:99px;padding:8px 18px;color:var(--ink);text-decoration:none}
+.pp-others a:hover{border-color:var(--ink)}
+.pp-foot{margin-top:56px;font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:20px}
+@media(max-width:760px){.pp-hero{grid-template-columns:96px 1fr;align-items:start}.pp-pic img{height:170px}.pp-banner img{height:270px;object-position:76% center}.pp-banner::after{background:linear-gradient(0deg,rgba(18,38,28,.9) 0%,rgba(18,38,28,.5) 50%,rgba(18,38,28,0) 85%)}.pp-banner-txt{top:auto;bottom:16px;transform:none;max-width:calc(100% - 36px)}.pp-banner-txt h1{font-size:34px}.pp-banner-txt .pp-alt{margin:2px 0 8px}.pp-buy{grid-column:1/-1}.pp-info{display:contents}.pp-blurb{align-self:center;margin:0}}
