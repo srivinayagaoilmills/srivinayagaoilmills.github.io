@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Admin | Sri Vinayaga Oil &amp; Flour Mills</title>
+<link rel="icon" type="image/png" href="../assets/favicon-64.png" sizes="64x64"><link rel="apple-touch-icon" href="../assets/favicon-192.png">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="adm">
+<section id="login" class="a-login">
+  <form class="a-loginbox f" id="loginForm" novalidate>
+    <div class="logo" style="margin-bottom:6px"><img class="mark" src="../assets/logo-drop.webp" alt="" width="26" height="42"><b>Sri Vinayaga</b><span>Admin panel</span></div>
+    <label class="fl">Email or mobile number<input type="text" name="id" autocomplete="username" required></label>
+    <label class="fl">Password<input type="password" name="password" autocomplete="current-password" required></label>
+    <div class="msg err" id="loginMsg" role="alert"></div>
+    <button class="btn" type="submit">Sign in</button>
+    <p class="hint"><a class="link" href="../">Back to the shop</a></p>
+  </form>
+</section>
+
+<div id="app" class="a-app" hidden>
+  <aside class="a-side" id="side">
+    <a class="logo" href="../" title="Open the shop"><img class="mark" src="../assets/logo-drop.webp" alt="" width="26" height="42"><b>Sri Vinayaga</b><span>Admin panel</span></a>
+    <nav id="nav" aria-label="Admin sections"></nav>
+    <div class="a-me"><div id="me"></div><button class="btn line sm" id="logout">Sign out</button></div>
+  </aside>
+  <div class="a-main">
+    <header class="a-top"><button class="icon-btn" id="menuBtn" aria-label="Menu">Menu</button><h1 id="title"></h1><button class="btn line sm" id="refresh">Refresh</button></header>
+    <main id="main" tabindex="-1"></main>
+  </div>
+</div>
+
+<div class="a-modal" id="modal" hidden><div class="a-sheet" role="dialog" aria-modal="true" id="sheet"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="../js/vendor/supabase.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
