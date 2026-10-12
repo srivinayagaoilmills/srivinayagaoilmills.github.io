@@ -252,7 +252,7 @@ const S = {
 try { S.cart = JSON.parse(store.get('sv_cart') || '[]').filter(x => x && x.id && x.qty > 0); } catch (e) { S.cart = []; }
 const saveCart = () => store.set('sv_cart', JSON.stringify(S.cart));
 const setting = (k, d) => (S.settings[k] === undefined || S.settings[k] === null) ? d : S.settings[k];
-const contact = () => Object.assign({ phone1: '99658 42548', phone2: '63798 09495', email: 'vinayagaoilmills@gmail.com', whatsapp1: SV.whatsapp, wa_md: '919965842548', wa_admin: '916379809495', instagram: 'https://www.instagram.com/vinayaga_mills/', facebook: 'https://www.facebook.com/srivinayagamills', threads: 'https://www.threads.com/@vinayaga_mills', maps_url: 'https://maps.app.goo.gl/yUar4BYDgQyybho69' }, S.settings.contact || {});
+const contact = () => Object.assign({ phone1: '99658 42548', phone2: '63798 09495', email: 'vinayagaoilmills@gmail.com', whatsapp1: SV.whatsapp, wa_md: '919965842548', wa_admin: '916379809495', instagram: 'https://www.instagram.com/vinayaga_mills/', facebook: 'https://www.facebook.com/srivinayagamills', threads: 'https://www.threads.com/@vinayaga_mills', maps_url: 'https://maps.app.goo.gl/yUar4BYDgQyybho69' }, Object.fromEntries(Object.entries(S.settings.contact || {}).filter(([, v]) => v != null && String(v).trim() !== '')));
 const inWindow = r => { const n = Date.now(); return (!r.starts_at || new Date(r.starts_at) <= n) && (!r.ends_at || new Date(r.ends_at) >= n); };
 const variantMap = () => { const m = {}; S.products.forEach(p => p.variants.forEach(v => { m[v.id] = { v, p }; })); return m; };
 
