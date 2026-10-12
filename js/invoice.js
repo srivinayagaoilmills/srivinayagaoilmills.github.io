@@ -7,7 +7,7 @@
   const MONO = "'IBM Plex Mono',monospace", SERIF = "'Cormorant Garamond',serif", SANS = "'Hanken Grotesk',sans-serif", TAM = "'Noto Serif Tamil',serif";
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const inr = n => '₹ ' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const SITE = { name_en: 'Sri Vinayaga Oil & Flour Mills', addr_en: '120 Vellalar Street, Kondayampettai Agraharam, Thiruvanaikoil, Srirangam, Trichy - 620005', addr_ta: '120 வேளாளர் தெரு, கொண்டையம்பேட்டை அக்ரஹாரம், திருவானைக்கோவில், ஸ்ரீரங்கம், திருச்சி - 620005', email: 'vinayagaoilmills@gmail.com', phones: '99658 42548 · 63798 09495', fssai: '22424592000420' };
+  const SITE = { gstin: '33AHWPK7305B1ZG', name_en: 'Sri Vinayaga Oil & Flour Mills', addr_en: '120 Vellalar Street, Kondayampettai Agraharam, Thiruvanaikoil, Srirangam, Trichy - 620005', addr_ta: '120 வேளாளர் தெரு, கொண்டையம்பேட்டை அக்ரஹாரம், திருவானைக்கோவில், ஸ்ரீரங்கம், திருச்சி - 620005', email: 'vinayagaoilmills@gmail.com', phones: '99658 42548 · 63798 09495', fssai: '22424592000420' };
 
   const TXT = {
     en: {
@@ -90,7 +90,8 @@
         <div>${esc(ta ? SITE.addr_ta : SITE.addr_en)}</div>
         <div style="font-family:${MONO};font-size:8.5pt">${SITE.phones}</div>
         <div style="font-family:${MONO};font-size:8.5pt">${SITE.email}</div>
-        <div style="font-size:8pt;color:${MUTE}">${esc(T.fssai)} <span style="font-family:${MONO};color:${INK}">${SITE.fssai}</span></div></div></div>
+        <div style="font-size:8pt;color:${MUTE}">${esc(T.fssai)} <span style="font-family:${MONO};color:${INK}">${SITE.fssai}</span></div>
+        <div style="font-size:8pt;color:${MUTE}">GSTIN <span style="font-family:${MONO};color:${INK}">${SITE.gstin}</span></div></div></div>
     <table style="width:100%;border-collapse:collapse;margin-top:5mm">
       <thead><tr style="background:${G};color:${PAPER};font-size:7.5pt;font-weight:600;letter-spacing:${ta ? '0' : '0.1em'};text-transform:${ta ? 'none' : 'uppercase'}">
         <th style="text-align:left;padding:2.2mm 3mm;width:12mm;font-weight:600">${esc(T.th[0])}</th><th style="text-align:left;padding:2.2mm 3mm;font-weight:600">${esc(T.th[1])}</th>
@@ -150,14 +151,16 @@
       const cuts = [...sheet.querySelectorAll('tbody tr')].map(r => r.getBoundingClientRect().bottom - sTop)
         .concat([...sheet.children].map(c => c.getBoundingClientRect().top - sTop)).map(v => Math.round(v * k)).sort((a, b) => a - b);
       let y = 0, first = true;
+      /* the sheet can be a pixel or two over A4 from rounding: that is still one page */
+      const onePage = canvas.height <= pagePx + Math.round(4 * pxPerMm);
       while (y < canvas.height - 2) {
-        let end = Math.min(y + pagePx, canvas.height);
-        if (end < canvas.height) { const c = cuts.filter(v => v > y + pagePx * 0.5 && v <= end); if (c.length) end = c[c.length - 1]; }
+        let end = onePage ? canvas.height : Math.min(y + pagePx, canvas.height);
+        if (!onePage && end < canvas.height) { const c = cuts.filter(v => v > y + pagePx * 0.5 && v <= end); if (c.length) end = c[c.length - 1]; }
         const h = end - y;
         const part = document.createElement('canvas'); part.width = canvas.width; part.height = h;
         const c2 = part.getContext('2d'); c2.fillStyle = '#fff'; c2.fillRect(0, 0, part.width, h); c2.drawImage(canvas, 0, y, canvas.width, h, 0, 0, canvas.width, h);
         if (!first) pdf.addPage('a4', 'portrait');
-        pdf.addImage(part.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, pw, h / pxPerMm, undefined, 'FAST');
+        pdf.addImage(part.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, pw * Math.min(1, ph / (h / pxPerMm)), Math.min(ph, h / pxPerMm), undefined, 'FAST');
         y = end; first = false;
       }
       pdf.save('Invoice-' + d.no + '.pdf');
