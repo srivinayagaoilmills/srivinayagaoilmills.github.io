@@ -1,2 +1,5 @@
 User-agent: *
 Disallow: /admin/
+Allow: /
+
+Sitemap: https://srivinayagaoilmills.github.io/sitemap.xml
