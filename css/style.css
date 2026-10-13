@@ -804,3 +804,26 @@ html[lang="ta"] .fest-card p{font-family:var(--f-ta)}
 a.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center}
 /* Tamil opening-hours text is long: keep it from running into the centred message */
 @media (min-width:901px) and (max-width:2100px){html[lang="ta"] .tb-hours{display:none}}
+
+
+/* price + MRP + red "Save" ribbon */
+.price.has-save{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;flex-basis:100%;margin-right:0}
+.price .mrp{font:500 16px var(--f-body);color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.price:not(.has-save) .mrp{margin-left:8px}
+.price .save{position:relative;display:inline-block;margin-right:20px;filter:drop-shadow(0 2px 3px rgba(80,0,10,.32))}
+.price .save::after{content:"";position:absolute;right:-19px;top:50%;width:15px;height:30px;margin-top:-15px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='30' viewBox='0 0 15 30' fill='none' stroke='%23B3242F' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M2 5 L8 1'/%3E%3Cpath d='M4 15 H13'/%3E%3Cpath d='M2 25 L8 29'/%3E%3C/svg%3E") no-repeat center}
+.price .sv-t{position:relative;display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 16px 0 24px;color:#fff;white-space:nowrap;
+  background:linear-gradient(180deg,#B3242F,#8E1822);clip-path:polygon(12px 0,100% 0,calc(100% - 6px) 50%,100% 100%,12px 100%,0 50%);
+  font:600 16px/1 var(--f-display);font-variant-numeric:lining-nums}
+.price .sv-t::before{content:"";position:absolute;left:11px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:#fff}
+.price .sv-t i{width:1px;height:16px;background:rgba(255,255,255,.55)}
+.price .sv-t b{color:#FFD76A;font:700 13px/1 var(--f-body);letter-spacing:.4px}
+@media (max-width:420px){.price .save{margin-right:8px}.price .save::after{display:none}}
+.price .now{font-variant-numeric:lining-nums}
+
+/* promo code box (cart) */
+.sect.promo h4{margin:0 0 8px}
+.promo-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.promo-tag{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;letter-spacing:.06em;padding:3px 10px;border:1.5px dashed #B3242F;color:#B3242F;border-radius:6px;background:rgba(179,36,47,.06)}
+.promo-row .link{margin-left:auto;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit}
+.sect.promo.ok .hint{margin:6px 0 0}

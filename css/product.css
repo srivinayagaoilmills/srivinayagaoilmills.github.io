@@ -25,6 +25,7 @@
 .pp-buy{display:grid;gap:14px}
 .pp-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .pp-row .price{font:600 28px var(--f-body,inherit);min-width:92px}
+.pp-row .price.has-save{flex-basis:100%}
 .pp-msg{color:var(--brand);font-weight:500}.pp-msg a{margin-left:8px}
 .pp-wait{color:var(--muted)}
 .pp-sec{margin-top:clamp(36px,5vw,60px);max-width:760px}
