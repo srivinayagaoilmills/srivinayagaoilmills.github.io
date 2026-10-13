@@ -7,7 +7,7 @@
     added: ['Added to your cart.', 'கூடையில் சேர்க்கப்பட்டது.'], view: ['View cart', 'கூடையைப் பார்'], more: ['Keep browsing', 'மேலும் பார்'],
     max: ['Online orders are limited to %1 of this size. For more, use the bulk enquiry.', 'இந்த அளவில் ஆன்லைனில் %1 வரை மட்டுமே. அதிகம் தேவையெனில் மொத்த விசாரணையைப் பயன்படுத்துங்கள்.'],
     fail: ['Could not load prices. Please open the shop to order.', 'விலைகளை ஏற்ற முடியவில்லை. ஆர்டர் செய்ய கடையைத் திறக்கவும்.'], shop: ['Open the shop', 'கடையைத் திற'],
-    left: ['Only %1 left', 'இன்னும் %1 மட்டுமே'], pay: ['Free delivery above the amount shown in your cart.', 'கூடையில் காட்டப்படும் தொகைக்கு மேல் டெலிவரி இலவசம்.']
+    save: ['Save %1', '%1 சேமிப்பு'], off: ['%1% OFF', '%1% தள்ளுபடி'], left: ['Only %1 left', 'இன்னும் %1 மட்டுமே'], pay: ['Free delivery above the amount shown in your cart.', 'கூடையில் காட்டப்படும் தொகைக்கு மேல் டெலிவரி இலவசம்.']
   };
   var lang = function () { return H.lang === 'ta' ? 1 : 0; };
   var t = function (k, a) { var s = T[k][lang()]; return a === undefined ? s : s.replace('%1', a); };
@@ -32,13 +32,18 @@
 
   var state = { p: null, v: null, q: 1, msg: '' };
   var vOf = function () { return state.p.variants.find(function (x) { return x.id === state.v; }); };
+  function priceHtml(v) {
+    var off = +v.mrp - +v.price; if (!(off > 0)) return '<span class="now">' + inr(v.price) + '</span>';
+    var pct = Math.round(off / +v.mrp * 100);
+    return '<span class="now">' + inr(v.price) + '</span><s class="mrp">' + inr(v.mrp) + '</s><span class="save"><span class="sv-t"><span>' + esc(t('save', inr(off))) + '</span>' + (pct >= 1 ? '<i></i><b>' + esc(t('off', pct)) + '</b>' : '') + '</span></span>';
+  }
   function render() {
     var p = state.p, v = vOf(), box = document.getElementById('ppBuy'), max = v.max_online_qty || 100;
     var out = v.stock === 0;
     box.innerHTML = '<div class="chips" role="group" aria-label="' + esc(t('size')) + '">' + p.variants.map(function (x) {
       return '<button type="button" class="chip" data-v="' + x.id + '" aria-pressed="' + (x.id === state.v) + '"' + (x.stock === 0 ? ' disabled' : '') + '>' + esc(x.label) + '</button>'; }).join('') + '</div>' +
       (v.stock > 0 && v.stock <= 5 ? '<p class="low">' + esc(t('left', v.stock)) + '</p>' : '') +
-      '<div class="pp-row"><div class="price">' + inr(v.price) + '</div>' +
+      '<div class="pp-row"><div class="price' + (+v.mrp > +v.price ? ' has-save' : '') + '">' + priceHtml(v) + '</div>' +
       '<div class="qty" role="group" aria-label="' + esc(t('qty')) + '"><button type="button" data-q="-1" aria-label="−">−</button><output>' + state.q + '</output><button type="button" data-q="1" aria-label="+">+</button></div>' +
       '<button type="button" class="btn" data-add' + (out ? ' disabled' : '') + '>' + esc(out ? t('out') : t('add')) + '</button></div>' +
       '<p class="hint">' + esc(t('pay')) + '</p>' +
@@ -68,7 +73,7 @@
   var l0 = H.lang === 'ta' ? 'ta' : 'en'; setLang(l0, false); badge();
   try {
     var sb = window.supabase.createClient(SV.url, SV.key);
-    sb.from('products').select('id,slug,name_en,variants(id,label,price,stock,max_online_qty,is_active,sort_order)').eq('slug', slug).eq('is_active', true).maybeSingle().then(function (r) {
+    sb.from('products').select('id,slug,name_en,variants(id,label,price,mrp,stock,max_online_qty,is_active,sort_order)').eq('slug', slug).eq('is_active', true).maybeSingle().then(function (r) {
       var p = r && r.data; if (!p) return fail();
       p.variants = (p.variants || []).filter(function (v) { return v.is_active; }).sort(function (a, b) { return a.sort_order - b.sort_order; });
       if (!p.variants.length) return fail();

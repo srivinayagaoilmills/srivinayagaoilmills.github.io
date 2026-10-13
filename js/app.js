@@ -12,6 +12,12 @@ const store = {
 };
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const inr = n => '₹' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+/* price block: selling price, crossed-out MRP and the red "Save" ribbon (only when the MRP is higher) */
+const priceHtml = v => {
+  const off = +v.mrp - +v.price; if (!(off > 0)) return `<span class="now">${inr(v.price)}</span>`;
+  const pct = Math.round(off / +v.mrp * 100);
+  return `<span class="now">${inr(v.price)}</span><s class="mrp">${inr(v.mrp)}</s><span class="save"><span class="sv-t"><span>${esc(t('saveAmt', inr(off)))}</span>${pct >= 1 ? `<i></i><b>${esc(t('offPct', pct))}</b>` : ''}</span></span>`;
+};
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let lang = store.get('sv_lang') || ((navigator.language || '').toLowerCase().startsWith('ta') ? 'ta' : 'en');
@@ -20,6 +26,8 @@ const pick = (o, f) => lang === 'ta' && o[f + '_ta'] ? o[f + '_ta'] : o[f + '_en
 
 const T = {
   addToCart: ['Add to cart', 'கார்ட்டில் சேர்'],
+  saveAmt: ['Save %1', '%1 சேமிப்பு'],
+  offPct: ['%1% OFF', '%1% தள்ளுபடி'],
   added: ['Added to cart', 'கார்ட்டில் சேர்க்கப்பட்டது'],
   outOfStock: ['Out of stock', 'இருப்பு இல்லை'],
   signature: ['Signature', 'சிறப்பு'],
@@ -43,6 +51,14 @@ const T = {
   redeemLow: ['You need at least %1 points to redeem. You have %2.', 'பயன்படுத்த குறைந்தது %1 புள்ளிகள் தேவை. உங்களிடம் %2.'],
   useMax: ['Use maximum', 'அதிகபட்சம்'],
   apply: ['Apply', 'பயன்படுத்து'],
+  promoTitle: ['Have a promo code?', 'ப்ரோமோ குறியீடு உள்ளதா?'],
+  promoPh: ['Enter code', 'குறியீட்டை உள்ளிடவும்'],
+  promoLine: ['Promo %1', 'ப்ரோமோ %1'],
+  promoOk: ['%1 applied', '%1 பயன்படுத்தப்பட்டது'],
+  promoFree: ['Free delivery on this order', 'இந்த ஆர்டருக்கு இலவச டெலிவரி'],
+  promoSave: ['You save %1', 'நீங்கள் சேமிப்பது %1'],
+  promoRm: ['Remove', 'நீக்கு'],
+  promoDropped: ['The promo code no longer applies to this cart.', 'இந்த கார்ட்டுக்கு ப்ரோமோ குறியீடு இனி பொருந்தாது.'],
   clear: ['Clear', 'நீக்கு'],
   deliverTo: ['Delivery details', 'விநியோக விவரம்'],
   name: ['Full name', 'முழு பெயர்'],
@@ -205,6 +221,12 @@ const T = {
     BULK_REQUIRED: ['That quantity is above the online limit. Please send a bulk enquiry.', 'இந்த அளவு ஆன்லைன் வரம்பை மீறுகிறது. மொத்த ஆர்டர் விசாரணை அனுப்பவும்.'],
     REDEEM_BELOW_MIN: ['You need to redeem at least %1 points.', 'குறைந்தது %1 புள்ளிகள் பயன்படுத்த வேண்டும்.'],
     REDEEM_EXCEEDS_BALANCE: ['You do not have that many points.', 'உங்களிடம் அவ்வளவு புள்ளிகள் இல்லை.'],
+    PROMO_OFF: ['Promo codes are not available right now.', 'ப்ரோமோ குறியீடுகள் தற்போது இல்லை.'],
+    PROMO_INVALID: ['That promo code is not valid.', 'இந்த ப்ரோமோ குறியீடு செல்லாது.'],
+    PROMO_EXPIRED: ['This promo code has ended or has not started yet.', 'இந்த ப்ரோமோ குறியீடு முடிந்துவிட்டது அல்லது இன்னும் தொடங்கவில்லை.'],
+    PROMO_MIN: ['Add items worth ₹%1 or more to use this code.', '₹%1 அல்லது அதற்கு மேல் மதிப்புள்ள பொருட்களைச் சேர்த்தால் இந்த குறியீடு செல்லும்.'],
+    PROMO_LIMIT: ['This offer is fully used.', 'இந்த சலுகை முழுவதும் பயன்படுத்தப்பட்டுவிட்டது.'],
+    PROMO_USED: ['You have already used this code.', 'இந்த குறியீட்டை நீங்கள் ஏற்கனவே பயன்படுத்தியுள்ளீர்கள்.'],
     REDEEM_EXCEEDS_ORDER: ['Points used cannot be more than the order value.', 'ஆர்டர் மதிப்பை விட அதிகமாக பயன்படுத்த முடியாது.'],
     ITEM_UNAVAILABLE: ['An item in your cart is no longer available. Please remove it.', 'கார்ட்டில் உள்ள ஒரு பொருள் இப்போது கிடைக்கவில்லை. அதை நீக்கவும்.'],
     RESET_FAILED: ['The details do not match our records.', 'விவரங்கள் எங்கள் பதிவுகளுடன் பொருந்தவில்லை.'],
@@ -386,7 +408,7 @@ async function loadCatalogue() {
 let slideIdx = 0, slideTimer = null;
 function renderHero() {
   const slides = S.slides.length ? S.slides : [{ image_url: 'assets/hero-1.webp', headline_en: 'Pressed here. Poured honestly.', headline_ta: 'இங்கேயே பிழிந்தது. நேர்மையாக வழங்குவது.', sub_en: 'Sun-dried seed, cast-iron expeller, no blending.', sub_ta: 'வெயிலில் உலர்த்திய விதை, வார்ப்பிரும்பு இயந்திரம், கலப்பில்லை.', cta_label: 'Shop the oils', cta_href: '#oils' }];
-  $('#slides').innerHTML = slides.map((s, i) => `<div class="slide ${i === slideIdx ? 'on' : ''}"><img src="${esc(s.image_url)}" alt="" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy" decoding="async"'}></div>`).join('');
+  $('#slides').innerHTML = slides.map((s, i) => `<div class="slide ${i === slideIdx ? 'on' : ''}"><img src="${esc(s.image_url)}" alt="${esc(s.headline_en || 'Sri Vinayaga Oil & Flour Mills')}" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy" decoding="async"'}></div>`).join('');
   $('#dots').innerHTML = slides.length > 1 ? slides.map((s, i) => `<button role="tab" aria-label="Slide ${i + 1}" aria-selected="${i === slideIdx}" class="${i === slideIdx ? 'on' : ''}" data-i="${i}"></button>`).join('') : '';
   showSlideText(slides[slideIdx]);
   clearTimeout(slideTimer);
@@ -521,7 +543,7 @@ function cardHtml(p) {
       ${note}
       ${lowStock(v)}
       <div class="buyrow">
-        <div class="price">${inr(v.price)}</div>
+        <div class="price${+v.mrp > +v.price ? ' has-save' : ''}">${priceHtml(v)}</div>
         <div class="qty" role="group" aria-label="Quantity"><button data-act="minus" aria-label="Less">−</button><output>${q}</output><button data-act="plus" aria-label="More">+</button></div>
         <button class="btn" data-act="add" ${v.stock === 0 ? 'disabled' : ''}>${esc(v.stock === 0 ? t('outOfStock') : t('addToCart'))}</button>
       </div>
@@ -607,7 +629,23 @@ function renderCartBadge() {
     st.hidden = false; requestAnimationFrame(() => st.classList.add('on'));
   } else { st.classList.remove('on'); setTimeout(() => { if (!st.classList.contains('on')) st.hidden = true; }, 320); }
 }
-function feeFor(net) { return net >= setting('free_delivery_above', 1500) ? 0 : setting('delivery_fee', 80); }
+function feeFor(net, freeShip) { return (freeShip || net >= setting('free_delivery_above', 1500)) ? 0 : setting('delivery_fee', 80); }
+/* promo codes: the owner switches them on in Admin > Promo codes. The server re-checks every code when the order is placed. */
+const promoOn = () => { const v = setting('promo_enabled', false); return v === true || v === 'true' || v === 'on'; };
+const promoDisc = sub => (S.promo && promoOn()) ? Math.min(+S.promo.discount || 0, sub) : 0;
+let promoBusy = false;
+async function promoCheck(code, sub) {
+  const ph = $('#coForm [name=phone]'); const phone = ph ? cleanPhone(ph.value) : '';
+  const { data, error } = await sb.rpc('promo_check', { p_code: code, p_subtotal: sub, p_phone: /^[6-9]\d{9}$/.test(phone) ? phone : null });
+  return { data, error };
+}
+async function promoRefresh(sub) {
+  if (promoBusy) return; promoBusy = true;
+  const { data, error } = await promoCheck(S.promo.code, sub);
+  promoBusy = false;
+  if (error || !data) { S.promo = null; S.promoMsg = t('promoDropped'); } else { S.promo = Object.assign(data, { sub }); }
+  renderCart();
+}
 
 let cartView = 'cart'; let lastOrder = null;
 function renderCart() {
@@ -618,16 +656,19 @@ function renderCart() {
     return;
   }
   const sub = cartSubtotal();
+  if (S.promo && !promoOn()) S.promo = null;
+  if (S.promo && S.promo.sub !== sub) promoRefresh(sub);
+  const disc = promoDisc(sub);
   const minR = setting('min_redeem_points', 400);
   const bal = S.profile ? S.profile.points_balance : 0;
-  if (S.redeem > Math.min(bal, sub)) S.redeem = 0;
-  const net = sub - S.redeem; const fee = feeFor(net); const total = net + fee;
+  if (S.redeem > Math.min(bal, sub - disc)) S.redeem = 0;
+  const net = sub - disc - S.redeem; const fee = feeFor(net, S.promo && S.promo.free_delivery); const total = net + fee;
   const free = setting('free_delivery_above', 1500);
   const p = S.profile || {};
   const lines = S.cart.map(l => {
     const i = lineInfo(l); if (!i) return '';
     return `<div class="line-item" data-k="${l.k}" data-id="${l.id}">
-      ${i.img ? `<img src="${esc(i.img)}" alt="">` : '<span></span>'}
+      ${i.img ? `<img src="${esc(i.img)}" alt="${esc(i.name)}">` : '<span></span>'}
       <div><h4>${esc(i.name)}</h4><small>${esc(i.label)} · ${inr(i.price)}</small>
         <div style="margin-top:8px;display:flex;align-items:center"><div class="qty"><button data-act="cminus" aria-label="Less">−</button><output>${l.qty}</output><button data-act="cplus" aria-label="More">+</button></div><button class="rm" data-act="crm">${esc(t('remove'))}</button></div></div>
       <b>${inr(i.price * l.qty)}</b></div>`;
@@ -636,14 +677,22 @@ function renderCart() {
   if (S.profile) {
     if (bal >= minR) {
       redeemBox = `<div class="sect"><h4>${esc(t('redeemTitle'))}</h4><p class="hint">${esc(t('redeemHint', bal, minR))}</p>
-        <div class="refbox"><input type="number" id="rdIn" min="${minR}" max="${Math.min(bal, sub)}" step="1" value="${S.redeem || ''}" inputmode="numeric" aria-label="Points to use"><button class="btn line sm" data-act="rdApply">${esc(t('apply'))}</button><button class="btn line sm" data-act="rdMax">${esc(t('useMax'))}</button>${S.redeem ? `<button class="btn line sm" data-act="rdClear">${esc(t('clear'))}</button>` : ''}</div><div class="msg err" id="rdMsg"></div></div>`;
+        <div class="refbox"><input type="number" id="rdIn" min="${minR}" max="${Math.min(bal, sub - disc)}" step="1" value="${S.redeem || ''}" inputmode="numeric" aria-label="Points to use"><button class="btn line sm" data-act="rdApply">${esc(t('apply'))}</button><button class="btn line sm" data-act="rdMax">${esc(t('useMax'))}</button>${S.redeem ? `<button class="btn line sm" data-act="rdClear">${esc(t('clear'))}</button>` : ''}</div><div class="msg err" id="rdMsg"></div></div>`;
     } else {
       redeemBox = `<p class="hint sect">${esc(t('redeemLow', minR, bal))}</p>`;
     }
   }
   const away = free - net;
-  dr.innerHTML = head(t('cart'), 'cartT') + `<div class="dr-body">${lines}${redeemBox}
+  let promoBox = '';
+  if (promoOn()) {
+    const pm = S.promoMsg; S.promoMsg = '';
+    promoBox = S.promo
+      ? `<div class="sect promo ok"><div class="promo-row"><span class="promo-tag">${esc(S.promo.code)}</span><b>${esc(t('promoOk', S.promo.code))}</b><button class="link" type="button" data-act="promoRm">${esc(t('promoRm'))}</button></div><p class="hint">${esc(S.promo.free_delivery ? t('promoFree') : t('promoSave', inr(disc)))}${S.promo.title ? ' · ' + esc(S.promo.title) : ''}</p></div>`
+      : `<div class="sect promo"><h4>${esc(t('promoTitle'))}</h4><div class="refbox"><input type="text" id="promoIn" maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${esc(t('promoPh'))}" aria-label="${esc(t('promoTitle'))}"><button class="btn line sm" type="button" data-act="promoApply">${esc(t('apply'))}</button></div><div class="msg err${pm ? ' show' : ''}" id="promoMsg" role="alert">${esc(pm || '')}</div></div>`;
+  }
+  dr.innerHTML = head(t('cart'), 'cartT') + `<div class="dr-body">${lines}${redeemBox}${promoBox}
     <div class="sum sect"><div><span>${esc(t('subtotal'))}</span><span>${inr(sub)}</span></div>
+      ${disc ? `<div class="em"><span>${esc(t('promoLine', S.promo.code))}</span><span>−${inr(disc)}</span></div>` : ''}
       ${S.redeem ? `<div class="em"><span>${esc(t('pointsUsed'))}</span><span>−${inr(S.redeem)}</span></div>` : ''}
       <div><span>${esc(t('delivery'))}</span><span>${fee ? inr(fee) : esc(t('free'))}</span></div>
       <div class="tot"><span>${esc(t('total'))}</span><span>${inr(total)}</span></div></div>
@@ -659,7 +708,7 @@ function renderFestival() {
   const f = S.festival, bar = $('#festBar'), tk = $('#festTrack');
   if (bar) {
     if (f && (f.msg_en || f.msg_ta)) {
-      bar.innerHTML = (festImg(f.logo_url) ? '<img src="' + esc(festImg(f.logo_url)) + '" alt="" width="34" height="34">' : '<span class="fest-dot" aria-hidden="true">✦</span>') + '<span>' + esc(pick(f, 'msg')) + '</span>';
+      bar.innerHTML = (festImg(f.logo_url) ? '<img src="' + esc(festImg(f.logo_url)) + '" alt="' + esc(f.msg_en || 'Festival greeting') + '" width="34" height="34">' : '<span class="fest-dot" aria-hidden="true">✦</span>') + '<span>' + esc(pick(f, 'msg')) + '</span>';
       bar.hidden = false;
     } else { bar.hidden = true; bar.innerHTML = ''; }
   }
@@ -668,7 +717,7 @@ function renderFestival() {
 function festCardHtml(small) {
   const f = S.festival; if (!f || !(f.msg_en || f.msg_ta)) return '';
   const img = festImg(f.wish_url) || festImg(f.logo_url);
-  return '<div class="fest-card' + (small ? ' sm' : '') + '">' + (img ? '<img src="' + esc(img) + '" alt="" loading="lazy">' : '') + '<p>' + esc(pick(f, 'msg')) + '</p></div>';
+  return '<div class="fest-card' + (small ? ' sm' : '') + '">' + (img ? '<img src="' + esc(img) + '" alt="' + esc(f.msg_en || 'Festival greeting') + '" loading="lazy">' : '') + '<p>' + esc(pick(f, 'msg')) + '</p></div>';
 }
 
 let guestMode = false;
@@ -699,7 +748,7 @@ function head(title, id) { return `<div class="dr-head"><h3 id="${id}">${esc(tit
 
 /* ---------- UPI pay card (shows only the default UPI ID the owner chose) ---------- */
 let upiInfo, qrLoad;
-function loadQR() { return qrLoad || (qrLoad = new Promise((ok, no) => { if (window.qrcode) return ok(); const el = document.createElement('script'); el.src = 'js/qr.js?v=20261012c'; el.onload = ok; el.onerror = no; document.head.appendChild(el); })); }
+function loadQR() { return qrLoad || (qrLoad = new Promise((ok, no) => { if (window.qrcode) return ok(); const el = document.createElement('script'); el.src = 'js/qr.js?v=20261013d'; el.onload = ok; el.onerror = no; document.head.appendChild(el); })); }
 async function fillUpi(o) {
   const box = $('#upiCard'); if (!box) return;
   try {
@@ -763,7 +812,7 @@ if (isIOS) document.addEventListener('DOMContentLoaded', showInstall);
 
 /* ---------- invoice ---------- */
 let invLib;
-function loadInvoice() { return invLib || (invLib = new Promise((ok, no) => { if (window.SVInvoice) return ok(); const el = document.createElement('script'); el.src = 'js/invoice.js?v=20261012c'; el.onload = ok; el.onerror = () => { invLib = null; no(); }; document.head.appendChild(el); })); }
+function loadInvoice() { return invLib || (invLib = new Promise((ok, no) => { if (window.SVInvoice) return ok(); const el = document.createElement('script'); el.src = 'js/invoice.js?v=20261013d'; el.onload = ok; el.onerror = () => { invLib = null; no(); }; document.head.appendChild(el); })); }
 function invBtns(no) {
   const b = (l, c, tx) => `<button type="button" class="${c}" data-inv="${esc(no)}" data-il="${l}">${esc(tx)}</button>`;
   return `<span class="inv-row">${lang === 'ta' ? b('ask', 'link', t('invDl')) : b('en', 'link', t('invDl')) + b('ta', 'link sm', t('invTa'))}</span>`;
@@ -777,10 +826,11 @@ function invoiceData(o) {
   const lines = dbRow ? o.order_items.map(i => ({ name: i.item_name, label: i.item_label, qty: i.qty, price: +i.unit_price })) : (o.lines || []);
   const subtotal = dbRow ? +o.subtotal : lines.reduce((a, l) => a + l.price * l.qty, 0);
   const redeem = dbRow ? (o.points_redeemed || 0) : (o.redeem || 0);
-  const fee = dbRow ? +o.delivery_fee : Math.max(0, +o.total - (subtotal - redeem));
+  const promo = +o.promo_discount || 0;
+  const fee = dbRow ? +o.delivery_fee : Math.max(0, +o.total - (subtotal - promo - redeem));
   return { no: o.order_no, dateStr: new Date(o.created_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
     payMode: o.payment_mode, payStatus: o.payment_status || 'pending', name: o.customer_name || o.name, phone: o.phone, address: o.address, pin: o.pincode || o.pin,
-    lines, subtotal, redeem, fee, total: +o.total };
+    lines, subtotal, redeem, promo, promoCode: o.promo_code || '', fee, total: +o.total };
 }
 async function makeInvoice(no, il, btn) {
   const o = invOrder(no); if (!o) return;
@@ -820,7 +870,7 @@ document.addEventListener('click', e => {
 });
 function waLink(o) {
   const lines = (o.lines || []).map(l => '• ' + l.name + (l.label ? ' ' + l.label : '') + ' × ' + l.qty + ' = ₹' + (l.price * l.qty).toLocaleString('en-IN')).join('\n');
-  const msg = 'Hello, I placed order ' + o.order_no + ' on the website.\n\n' + lines + '\n\nTotal: ₹' + (+o.total).toLocaleString('en-IN') + ' (' + (o.payment_mode === 'online' ? 'online payment' : 'pay on delivery') + ')\nName: ' + o.name + '\nPhone: ' + o.phone + '\nAddress: ' + o.address + ' - ' + o.pin;
+  const msg = 'Hello, I placed order ' + o.order_no + ' on the website.\n\n' + lines + (+o.promo_discount > 0 ? '\nPromo ' + o.promo_code + ': -₹' + (+o.promo_discount).toLocaleString('en-IN') : '') + '\n\nTotal: ₹' + (+o.total).toLocaleString('en-IN') + ' (' + (o.payment_mode === 'online' ? 'online payment' : 'pay on delivery') + ')\nName: ' + o.name + '\nPhone: ' + o.phone + '\nAddress: ' + o.address + ' - ' + o.pin;
   return 'https://wa.me/' + waNum('admin') + '?text=' + encodeURIComponent(msg);
 }
 function cartDoneHtml() {
@@ -850,7 +900,7 @@ $('#cartDr').addEventListener('click', async e => {
     saveCart(); renderCartBadge(); renderCart(); return;
   }
   if (act === 'rdApply' || act === 'rdMax') {
-    const sub = cartSubtotal(); const bal = S.profile.points_balance; const minR = setting('min_redeem_points', 400);
+    const sub = cartSubtotal() - promoDisc(cartSubtotal()); const bal = S.profile.points_balance; const minR = setting('min_redeem_points', 400);
     const v = act === 'rdMax' ? Math.min(bal, sub) : Math.floor(+$('#rdIn').value || 0);
     const m = $('#rdMsg');
     if (v < minR) { m.textContent = t('err.REDEEM_BELOW_MIN', minR); m.classList.add('show'); return; }
@@ -859,6 +909,15 @@ $('#cartDr').addEventListener('click', async e => {
     S.redeem = v; SFX.play('coin'); renderCart(); return;
   }
   if (act === 'rdClear') { S.redeem = 0; renderCart(); return; }
+  if (act === 'promoRm') { S.promo = null; renderCart(); return; }
+  if (act === 'promoApply') {
+    const inp = $('#promoIn'), m = $('#promoMsg'); const code = (inp.value || '').trim().toUpperCase();
+    m.classList.remove('show'); if (!code) return;
+    b.disabled = true; const sub = cartSubtotal();
+    const { data, error } = await promoCheck(code, sub); b.disabled = false;
+    if (error || !data) { m.textContent = errText(error); m.classList.add('show'); return; }
+    S.promo = Object.assign(data, { sub }); S.redeem = 0; SFX.play('coin'); renderCart(); return;
+  }
   if (act === 'needLogin') { openAccount('in'); return; }
   if (act === 'guestGo') { guestMode = true; renderCart(); return; }
   if (act === 'guestSignup') { cartView = 'cart'; openAccount('up'); return; }
@@ -877,7 +936,7 @@ $('#cartDr').addEventListener('submit', async e => {
   const items = S.cart.map(l => ({ kind: l.k === 'c' ? 'combo' : 'variant', id: l.id, qty: l.qty }));
   const lines = S.cart.map(l => { const i = lineInfo(l); return i ? { name: i.name, label: i.label, price: i.price, qty: l.qty } : null; }).filter(Boolean);
   const imgs = [];
-  const base = { p_items: items, p_payment: fd.pay, p_name: fd.name, p_phone: cleanPhone(fd.phone), p_address: fd.address, p_pin: (fd.pin || '').trim(), p_notes: fd.notes || null, p_lang: lang };
+  const base = { p_items: items, p_payment: fd.pay, p_name: fd.name, p_phone: cleanPhone(fd.phone), p_address: fd.address, p_pin: (fd.pin || '').trim(), p_notes: fd.notes || null, p_lang: lang, p_promo: (S.promo && promoOn()) ? S.promo.code : null };
   const call = guest ? sb.rpc('place_guest_order', base) : sb.rpc('place_order', Object.assign({ p_redeem: S.redeem || 0 }, base));
   const res = await rocketOrder(call, imgs);
   const { data, error } = res;
@@ -888,7 +947,7 @@ $('#cartDr').addEventListener('submit', async e => {
     return;
   }
   lastOrder = Object.assign({ created_at: new Date().toISOString(), redeem: S.redeem || 0 }, data, { lines, name: fd.name, phone: cleanPhone(fd.phone), address: fd.address, pin: (fd.pin || '').trim(), viaWa, lang });
-  S.cart = []; S.redeem = 0; saveCart(); renderCartBadge();
+  S.cart = []; S.redeem = 0; S.promo = null; saveCart(); renderCartBadge();
   cartView = 'done'; renderCart();
   await rocketEnd(data);
   if (!guest) { await refreshAccount(); }
@@ -954,6 +1013,7 @@ function closeAll() {
 }
 $('#scrim').addEventListener('click', closeAll);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAll(); setMenu(false); } });
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target && e.target.id === 'promoIn') { e.preventDefault(); const b = document.querySelector('[data-act="promoApply"]'); if (b) b.click(); } });
 document.addEventListener('click', e => { if (e.target.closest('[data-close]')) closeAll(); });
 $('#cartBtn').addEventListener('click', () => { renderCart(); openDrawer($('#cartDr')); });
 const stk = $('#stick'); if (stk) stk.addEventListener('click', () => { renderCart(); openDrawer($('#cartDr')); });
@@ -1083,7 +1143,7 @@ function orderHtml(o) {
   const d = new Date(o.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
   return `<div class="ord"><header><span class="mono">${esc(o.order_no)}</span><span class="st ${esc(o.status)}">${esc(t('st.' + o.status))}</span></header>
     <div style="margin:6px 0;color:var(--muted)">${items}</div>
-    <div style="display:flex;justify-content:space-between"><span>${d} · ${esc(t('pay.' + o.payment_status))}</span><b>${inr(o.total)}</b></div>
+    <div style="display:flex;justify-content:space-between"><span>${d} · ${esc(t('pay.' + o.payment_status))}</span><b>${inr(o.total)}</b></div>${o.promo_code ? `<div class="hint" style="margin:4px 0 0">${esc(t('promoLine', o.promo_code))}${+o.promo_discount > 0 ? ' · −' + inr(o.promo_discount) : ' · ' + esc(t('promoFree'))}</div>` : ''}
     <div class="ord-act"><button type="button" class="link" data-reorder="${esc(o.order_no)}">${esc(t('reorder'))}</button>${invBtns(o.order_no)}<a class="link" href="#track" data-tkgo="${esc(o.order_no)}">${esc(t('tkGo'))}</a><button type="button" class="link" data-ordhelp="${esc(o.order_no)}">${esc(L('Need help?', 'உதவி வேண்டுமா?'))}</button></div></div>`;
 }
 $('#acctDr').addEventListener('click', async e => {
@@ -1175,14 +1235,14 @@ function renderCombos() {
   el.innerHTML = S.combos.length ? S.combos.map(cb => {
     const items = (cb.combo_items || []).map(ci => `<li>${ci.qty} × ${esc(pick(ci.variants.products, 'name'))} ${esc(ci.variants.label)}</li>`).join('');
     return `<article class="combo" data-id="${cb.id}">
-      <div class="cimg"><img src="${esc(cb.image_url || 'assets/combo-gift.webp')}" alt="" loading="lazy" decoding="async"></div>
+      <div class="cimg"><img src="${esc(cb.image_url || 'assets/combo-gift.webp')}" alt="${esc(cb.name_en || 'Gift combo of three oils')}" loading="lazy" decoding="async"></div>
       <div class="cbody"><h3>${esc(pick(cb, 'name'))}</h3>${cb.blurb_en ? `<p style="color:var(--muted)">${esc(pick(cb, 'blurb'))}</p>` : ''}
       <ul>${items}</ul>${cb.ends_at ? `<span class="ends">${esc(t('endsOn', new Date(cb.ends_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })))}</span>` : ''}
       <div class="buyrow"><div class="price">${inr(cb.price)}</div><button class="btn" data-act="addCombo">${esc(t('addToCart'))}</button></div></div></article>`;
-  }).join('') : `<div class="empty"><img src="assets/empty-basket.webp" alt="" loading="lazy" decoding="async"><div><b>${esc(t('noCombos'))}</b>${esc(t('noCombosHint', c.phone1))}</div></div>`;
+  }).join('') : `<div class="empty"><img src="assets/empty-basket.webp" alt="An empty woven basket" loading="lazy" decoding="async"><div><b>${esc(t('noCombos'))}</b>${esc(t('noCombosHint', c.phone1))}</div></div>`;
   const sp = S.offers.filter(o => o.kind !== 'announcement');
   $('#specialList').innerHTML = sp.map(o => `<article class="special ${o.image_url ? '' : 'noimg'}">
-    ${o.image_url ? `<div class="simg"><img src="${esc(o.image_url)}" alt="" loading="lazy" decoding="async"></div>` : ''}
+    ${o.image_url ? `<div class="simg"><img src="${esc(o.image_url)}" alt="${esc(o.title_en || 'Special offer')}" loading="lazy" decoding="async"></div>` : ''}
     <div class="sb">${o.badge ? `<span class="stamp">${esc(o.badge)}</span>` : ''}<h3>${esc(pick(o, 'title'))}</h3>${o.body_en ? `<p>${esc(pick(o, 'body'))}</p>` : ''}
     ${o.variant_id && variantMap()[o.variant_id] ? `<button class="btn sm" data-act="shopOffer" data-v="${o.variant_id}">${esc(t('shopThis'))}</button>` : ''}</div></article>`).join('');
 }

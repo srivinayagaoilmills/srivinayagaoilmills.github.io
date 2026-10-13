@@ -28,7 +28,7 @@
     { sel: '#langBtn', en: ['Your language', 'Switch between English and தமிழ்'], ta: ['உங்கள் மொழி', 'ஆங்கிலம் / தமிழ் மாற்றலாம்'] },
     { sel: '#themeBtn', en: ['Light or dark', 'Pick the look that is easy on your eyes'], ta: ['ஒளி அல்லது இருள்', 'உங்கள் கண்களுக்கு இதமான தோற்றம்'] },
     { sel: '#cartBtn', en: ['Your cart', 'Everything you add waits here until you order'], ta: ['உங்கள் கூடை', 'சேர்த்தவை அனைத்தும் இங்கே'] },
-    { sel: '#hero .btn.gold, #hero .btn', en: ['Shop the oils', 'Five oils, pack sizes and combos'], ta: ['எண்ணெய் வாங்க', 'ஐந்து எண்ணெய்கள், அளவுகள், காம்போக்கள்'] },
+    { sel: '#hero .btn.gold, #hero .btn', en: ['Shop the oils', 'Six oils, pack sizes and combos'], ta: ['எண்ணெய் வாங்க', 'ஆறு எண்ணெய்கள், அளவுகள், காம்போக்கள்'] },
     { scroll: true, en: ['Scroll down', 'Our story, rewards, tracking and more'], ta: ['கீழே நகருங்கள்', 'எங்கள் கதை, பரிசுப் புள்ளிகள், ஆர்டர் நிலை'] }
   ];
   const NS = 'http://www.w3.org/2000/svg';

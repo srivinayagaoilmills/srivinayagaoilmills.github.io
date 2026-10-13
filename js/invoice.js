@@ -16,7 +16,7 @@
       billed: 'Billed to', sold: 'Sold by', fssai: 'FSSAI Lic. No.',
       th: ['No.', 'Item', 'Qty', 'Unit price', 'Amount'],
       payHead: 'Payment', scan: 'Scan to pay', upiId: 'UPI ID',
-      sub1: 'Subtotal', pts: 'Points discount', fee: 'Delivery fee', free: 'Free', total: 'Total', gst: 'All prices include GST',
+      sub1: 'Subtotal', promo: 'Promo code', pts: 'Points discount', fee: 'Delivery fee', free: 'Free', total: 'Total', gst: 'All prices include GST',
       thanks: 'Thank you for choosing Sri Vinayaga',
       ret: 'Return policy: food products are not returnable. For a genuine quality issue, report within 2 days of delivery with an unboxing video.',
       help: 'Helpline', web: 'Website', festFrom: 'From all of us at the mill in Thiruvanaikoil.',
@@ -29,7 +29,7 @@
       billed: 'பெறுபவர்', sold: 'விற்பவர்', fssai: 'உணவுப் பாதுகாப்பு உரிம எண் (FSSAI)',
       th: ['எண்', 'பொருள்', 'அளவு', 'விலை', 'தொகை'],
       payHead: 'கட்டணம்', scan: 'ஸ்கேன் செய்து செலுத்துங்கள்', upiId: 'UPI ஐடி',
-      sub1: 'துணைத் தொகை', pts: 'புள்ளிகள் தள்ளுபடி', fee: 'டெலிவரி கட்டணம்', free: 'இலவசம்', total: 'மொத்தம்', gst: 'அனைத்து விலைகளும் GST (சரக்கு மற்றும் சேவை வரி) உட்பட',
+      sub1: 'துணைத் தொகை', promo: 'ப்ரோமோ குறியீடு', pts: 'புள்ளிகள் தள்ளுபடி', fee: 'டெலிவரி கட்டணம்', free: 'இலவசம்', total: 'மொத்தம்', gst: 'அனைத்து விலைகளும் GST (சரக்கு மற்றும் சேவை வரி) உட்பட',
       thanks: 'ஸ்ரீ விநாயகாவைத் தேர்ந்தெடுத்ததற்கு நன்றி',
       ret: 'திருப்பியளிப்புக் கொள்கை: உணவுப் பொருட்களைத் திருப்பி எடுக்க இயலாது. உண்மையான தரக் குறைபாடு இருந்தால், டெலிவரி ஆன 2 நாட்களுக்குள் பார்சல் திறக்கும் வீடியோவுடன் தெரிவிக்கவும்.',
       help: 'உதவி எண்', web: 'இணையதளம்', festFrom: 'திருவானைக்கோவில் மில்லின் அனைவரிடமிருந்தும்.',
@@ -106,7 +106,7 @@
         ${showQr ? `<div style="display:flex;flex-direction:column;align-items:center;gap:1.2mm"><div style="width:24mm;height:24mm;background:#fff;border:0.2mm solid ${LINE};padding:0.8mm;box-sizing:border-box">${opt.qrSvg}</div>
           ${cap(T.scan, ta)}<div style="font-family:${MONO};font-size:6pt;color:${MUTE}">${esc(opt.upiId)}</div></div>` : ''}
       </div>
-      <div style="width:74mm;flex-shrink:0">${sum(T.sub1, inr(d.subtotal))}${d.redeem ? sum(T.pts, '− ' + inr(d.redeem)) : ''}${sum(T.fee, d.fee ? inr(d.fee) : esc(T.free))}
+      <div style="width:74mm;flex-shrink:0">${sum(T.sub1, inr(d.subtotal))}${d.promo ? sum(T.promo + (d.promoCode ? ' (' + esc(d.promoCode) + ')' : ''), '− ' + inr(d.promo)) : ''}${d.redeem ? sum(T.pts, '− ' + inr(d.redeem)) : ''}${sum(T.fee, d.fee ? inr(d.fee) : esc(T.free))}
         <div style="background:${G};color:${PAPER};border-radius:1.5mm;padding:2.6mm 3mm;margin-top:2.5mm;display:flex;justify-content:space-between;align-items:center">
           <div style="font-family:${ta ? TAM : SERIF};font-weight:700;font-size:${ta ? '12' : '15'}pt;line-height:1">${esc(T.total)}</div>
           <div style="font-family:${MONO};font-weight:600;font-size:12pt">${inr(d.total)}</div></div>
