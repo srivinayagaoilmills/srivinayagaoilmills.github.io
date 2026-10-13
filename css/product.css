@@ -36,3 +36,5 @@
 .pp-others a:hover{border-color:var(--ink)}
 .pp-foot{margin-top:56px;font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:20px}
 @media(max-width:760px){.pp-hero{grid-template-columns:96px 1fr;align-items:start}.pp-pic img{height:170px}.pp-banner img{height:270px;object-position:76% center}.pp-banner::after{background:linear-gradient(0deg,rgba(18,38,28,.9) 0%,rgba(18,38,28,.5) 50%,rgba(18,38,28,0) 85%)}.pp-banner-txt{top:auto;bottom:16px;transform:none;max-width:calc(100% - 36px)}.pp-banner-txt h1{font-size:34px}.pp-banner-txt .pp-alt{margin:2px 0 8px}.pp-buy{grid-column:1/-1}.pp-info{display:contents}.pp-blurb{align-self:center;margin:0}}
+
+.pp-buy{touch-action:pan-x pan-y}

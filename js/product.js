@@ -81,3 +81,11 @@
     }, fail);
   } catch (e) { fail(); }
 })();
+
+/* pinch-zoom stays on everywhere except the product cards, the product buy box and the cart / checkout drawer */
+(function () {
+  const Z = '.card, .pp-buy, #cartDr, .stick';
+  const inZone = e => e.target && e.target.closest && e.target.closest(Z);
+  document.addEventListener('touchmove', e => { if (e.touches && e.touches.length > 1 && inZone(e)) e.preventDefault(); }, { passive: false });
+  ['gesturestart', 'gesturechange'].forEach(ev => document.addEventListener(ev, e => { if (inZone(e)) e.preventDefault(); }));
+})();

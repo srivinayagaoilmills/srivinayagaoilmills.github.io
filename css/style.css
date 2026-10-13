@@ -827,3 +827,6 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-align:c
 .promo-tag{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;letter-spacing:.06em;padding:3px 10px;border:1.5px dashed #B3242F;color:#B3242F;border-radius:6px;background:rgba(179,36,47,.06)}
 .promo-row .link{margin-left:auto;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit}
 .sect.promo.ok .hint{margin:6px 0 0}
+
+/* no pinch-zoom on product cards and the cart / checkout drawer (zoom works everywhere else) */
+.card,.stick,#cartDr{touch-action:pan-x pan-y}

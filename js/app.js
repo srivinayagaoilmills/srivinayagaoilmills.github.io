@@ -47,7 +47,12 @@ const T = {
   freeAway: ['Add %1 more for free delivery.', 'இலவச விநியோகத்துக்கு இன்னும் %1 சேர்க்கவும்.'],
   freeYes: ['You get free delivery.', 'உங்களுக்கு இலவச விநியோகம்.'],
   redeemTitle: ['Use your points', 'புள்ளிகளைப் பயன்படுத்து'],
-  redeemHint: ['You have %1 points (1 point = ₹1). Minimum %2 to redeem.', 'உங்களிடம் %1 புள்ளிகள் (1 புள்ளி = ₹1). குறைந்தது %2 தேவை.'],
+  redeemHint: ['You have %1 points (1 point = %3). Use %2 or more, up to %4 of the cart value (%5 at most on this cart).', 'உங்களிடம் %1 புள்ளிகள் (1 புள்ளி = %3). %2 அல்லது அதற்கு மேல், கார்ட் மதிப்பில் %4 வரை (இந்த கார்ட்டில் அதிகபட்சம் %5).'],
+  ptsWorth: ['Worth %1', 'மதிப்பு %1'],
+  promoNoPts: ['Promo codes and points cannot be combined. Remove the code to use points.', 'ப்ரோமோ குறியீடும் புள்ளிகளும் சேர்த்துப் பயன்படுத்த முடியாது. புள்ளிகளுக்கு குறியீட்டை நீக்கவும்.'],
+  ptsNoPromo: ['Points cannot be used together with a promo code. Remove the code first.', 'புள்ளிகளை ப்ரோமோ குறியீட்டுடன் சேர்த்துப் பயன்படுத்த முடியாது. முதலில் குறியீட்டை நீக்கவும்.'],
+  promoNoEarn: ['Orders with a promo code do not earn points.', 'ப்ரோமோ குறியீடு பயன்படுத்தும் ஆர்டர்களுக்கு புள்ளிகள் கிடைக்காது.'],
+  ptsCartLow: ['Points can be used from a cart value of about %1.', 'புள்ளிகளைப் பயன்படுத்த கார்ட் மதிப்பு சுமார் %1 இருக்க வேண்டும்.'],
   redeemLow: ['You need at least %1 points to redeem. You have %2.', 'பயன்படுத்த குறைந்தது %1 புள்ளிகள் தேவை. உங்களிடம் %2.'],
   useMax: ['Use maximum', 'அதிகபட்சம்'],
   apply: ['Apply', 'பயன்படுத்து'],
@@ -174,7 +179,7 @@ const T = {
   joinTitle: ['Join and start earning', 'இணைந்து புள்ளிகள் பெறுங்கள்'],
   ruleCredit: ['Points are added when your order is delivered.', 'ஆர்டர் டெலிவரி ஆனதும் புள்ளிகள் சேர்க்கப்படும்.'],
   ruleCreditPlaced: ['Points are added as soon as your order is placed.', 'ஆர்டர் பதிவானதும் புள்ளிகள் சேர்க்கப்படும்.'],
-  ruleRedeem: ['1 point is worth ₹1. Redeem from %1 points at checkout.', '1 புள்ளி = ₹1. செக்அவுட்டில் %1 புள்ளிகளிலிருந்து பயன்படுத்தலாம்.'],
+  ruleRedeem: ['1 point is worth %1. Redeem from %2 points at checkout, up to %3 of the cart value.', '1 புள்ளி = %1. செக்அவுட்டில் %2 புள்ளிகளிலிருந்து, கார்ட் மதிப்பில் %3 வரை பயன்படுத்தலாம்.'],
   ruleRefer: ['Share your code. When a friend places a first order, you get %1 points and they get %2.', 'உங்கள் குறியீட்டைப் பகிருங்கள். நண்பர் முதல் ஆர்டர் செய்தால் உங்களுக்கு %1, அவருக்கு %2 புள்ளிகள்.'],
   bulkSent: ['Enquiry sent. Your reference is %1. We will call you soon.', 'விசாரணை அனுப்பப்பட்டது. உங்கள் குறிப்பு எண் %1. விரைவில் அழைப்போம்.'],
   sugSent: ['Thank you. We have your suggestion.', 'நன்றி. உங்கள் பரிந்துரை கிடைத்தது.'],
@@ -220,6 +225,8 @@ const T = {
     INVALID_ADDRESS: ['Enter the full delivery address.', 'முழு முகவரியை உள்ளிடவும்.'],
     BULK_REQUIRED: ['That quantity is above the online limit. Please send a bulk enquiry.', 'இந்த அளவு ஆன்லைன் வரம்பை மீறுகிறது. மொத்த ஆர்டர் விசாரணை அனுப்பவும்.'],
     REDEEM_BELOW_MIN: ['You need to redeem at least %1 points.', 'குறைந்தது %1 புள்ளிகள் பயன்படுத்த வேண்டும்.'],
+    REDEEM_EXCEEDS_LIMIT: ['Points can cover at most %1% of the cart value.', 'புள்ளிகள் கார்ட் மதிப்பில் அதிகபட்சம் %1% மட்டுமே ஈடுசெய்யும்.'],
+    PROMO_NO_POINTS: ['Promo codes and points cannot be used together.', 'ப்ரோமோ குறியீடும் புள்ளிகளும் சேர்த்துப் பயன்படுத்த முடியாது.'],
     REDEEM_EXCEEDS_BALANCE: ['You do not have that many points.', 'உங்களிடம் அவ்வளவு புள்ளிகள் இல்லை.'],
     PROMO_OFF: ['Promo codes are not available right now.', 'ப்ரோமோ குறியீடுகள் தற்போது இல்லை.'],
     PROMO_INVALID: ['That promo code is not valid.', 'இந்த ப்ரோமோ குறியீடு செல்லாது.'],
@@ -274,6 +281,13 @@ const S = {
 try { S.cart = JSON.parse(store.get('sv_cart') || '[]').filter(x => x && x.id && x.qty > 0); } catch (e) { S.cart = []; }
 const saveCart = () => store.set('sv_cart', JSON.stringify(S.cart));
 const setting = (k, d) => (S.settings[k] === undefined || S.settings[k] === null) ? d : S.settings[k];
+const flag = (k, d) => { const v = setting(k, d); return v === true || v === 'true' || v === 'on'; };
+/* points: 1 point is worth point_value rupees (Admin > Settings). Everything on the site reads it from here. */
+const pv = () => { const v = +setting('point_value', 1); return v > 0 ? v : 1; };
+const pvTxt = () => '₹' + (+pv().toFixed(2)).toLocaleString('en-IN');
+const minPts = () => +setting('min_redeem_points', 200);
+const maxPct = () => Math.min(100, Math.max(0, +setting('max_redeem_pct', 35)));
+const ptsCap = sub => Math.floor(sub * maxPct() / 100);
 const contact = () => Object.assign({ phone1: '99658 42548', phone2: '63798 09495', email: 'vinayagaoilmills@gmail.com', whatsapp1: SV.whatsapp, wa_md: '919965842548', wa_admin: '916379809495', instagram: 'https://www.instagram.com/vinayaga_mills/', facebook: 'https://www.facebook.com/srivinayagamills', threads: 'https://www.threads.com/@vinayaga_mills', maps_url: 'https://maps.app.goo.gl/yUar4BYDgQyybho69' }, Object.fromEntries(Object.entries(S.settings.contact || {}).filter(([, v]) => v != null && String(v).trim() !== '')));
 const inWindow = r => { const n = Date.now(); return (!r.starts_at || new Date(r.starts_at) <= n) && (!r.ends_at || new Date(r.ends_at) >= n); };
 const variantMap = () => { const m = {}; S.products.forEach(p => p.variants.forEach(v => { m[v.id] = { v, p }; })); return m; };
@@ -623,13 +637,23 @@ function renderCartBadge() {
   const n = cartCount(); const b = $('#cartN'); b.textContent = n || ''; b.dataset.n = n;
   const st = $('#stick'); if (!st) return;
   if (n) {
-    const sub = cartSubtotal(); const net = sub - (S.redeem || 0);
+    const c = calc();
     st.querySelector('.st-n').textContent = n === 1 ? t('stickItem') : t('stickItems', n);
-    st.querySelector('.st-t').textContent = inr(net + feeFor(net));
+    st.querySelector('.st-t').textContent = inr(c.total);
     st.hidden = false; requestAnimationFrame(() => st.classList.add('on'));
   } else { st.classList.remove('on'); setTimeout(() => { if (!st.classList.contains('on')) st.hidden = true; }, 320); }
 }
-function feeFor(net, freeShip) { return (freeShip || net >= setting('free_delivery_above', 1500)) ? 0 : setting('delivery_fee', 80); }
+function feeFor(basis, freeShip) { return (freeShip || basis >= setting('free_delivery_above', 1500)) ? 0 : setting('delivery_fee', 80); }
+/* one place that works out the cart: delivery is judged on the cart value, before promo or points */
+function calc() {
+  const sub = cartSubtotal();
+  const disc = (S.promo && promoOn()) ? Math.min(+S.promo.discount || 0, sub) : 0;
+  const rv = +((S.redeem || 0) * pv()).toFixed(2);
+  const net = sub - disc - rv;
+  const basis = setting('free_delivery_on', 'cart') === 'net' ? net : sub;
+  const fee = feeFor(basis, S.promo && S.promo.free_delivery);
+  return { sub, disc, rv, net, basis, fee, total: net + fee };
+}
 /* promo codes: the owner switches them on in Admin > Promo codes. The server re-checks every code when the order is placed. */
 const promoOn = () => { const v = setting('promo_enabled', false); return v === true || v === 'true' || v === 'on'; };
 const promoDisc = sub => (S.promo && promoOn()) ? Math.min(+S.promo.discount || 0, sub) : 0;
@@ -659,10 +683,11 @@ function renderCart() {
   if (S.promo && !promoOn()) S.promo = null;
   if (S.promo && S.promo.sub !== sub) promoRefresh(sub);
   const disc = promoDisc(sub);
-  const minR = setting('min_redeem_points', 400);
+  const minR = minPts(); const both = flag('promo_with_points', false);
   const bal = S.profile ? S.profile.points_balance : 0;
-  if (S.redeem > Math.min(bal, sub - disc)) S.redeem = 0;
-  const net = sub - disc - S.redeem; const fee = feeFor(net, S.promo && S.promo.free_delivery); const total = net + fee;
+  const maxP = Math.max(0, Math.min(bal, Math.floor(Math.min(ptsCap(sub), sub - disc) / pv())));
+  if (S.redeem > maxP || (S.promo && !both && S.redeem)) S.redeem = 0;
+  const { rv, net, basis, fee, total } = calc();
   const free = setting('free_delivery_above', 1500);
   const p = S.profile || {};
   const lines = S.cart.map(l => {
@@ -675,28 +700,32 @@ function renderCart() {
   }).join('');
   let redeemBox = '';
   if (S.profile) {
-    if (bal >= minR) {
-      redeemBox = `<div class="sect"><h4>${esc(t('redeemTitle'))}</h4><p class="hint">${esc(t('redeemHint', bal, minR))}</p>
-        <div class="refbox"><input type="number" id="rdIn" min="${minR}" max="${Math.min(bal, sub - disc)}" step="1" value="${S.redeem || ''}" inputmode="numeric" aria-label="Points to use"><button class="btn line sm" data-act="rdApply">${esc(t('apply'))}</button><button class="btn line sm" data-act="rdMax">${esc(t('useMax'))}</button>${S.redeem ? `<button class="btn line sm" data-act="rdClear">${esc(t('clear'))}</button>` : ''}</div><div class="msg err" id="rdMsg"></div></div>`;
+    if (S.promo && !both) {
+      redeemBox = `<p class="hint sect">${esc(t('promoNoPts'))}</p>`;
+    } else if (bal >= minR && maxP >= minR) {
+      redeemBox = `<div class="sect"><h4>${esc(t('redeemTitle'))}</h4><p class="hint">${esc(t('redeemHint', bal, minR, pvTxt(), maxPct() + '%', maxP))}</p>
+        <div class="refbox"><input type="number" id="rdIn" min="${minR}" max="${maxP}" step="1" value="${S.redeem || ''}" inputmode="numeric" aria-label="Points to use"><button class="btn line sm" data-act="rdApply">${esc(t('apply'))}</button><button class="btn line sm" data-act="rdMax">${esc(t('useMax'))}</button>${S.redeem ? `<button class="btn line sm" data-act="rdClear">${esc(t('clear'))}</button>` : ''}</div><div class="msg err" id="rdMsg"></div></div>`;
+    } else if (bal >= minR) {
+      redeemBox = `<p class="hint sect">${esc(t('ptsCartLow', inr(Math.ceil(minR * pv() * 100 / Math.max(1, maxPct())))))}</p>`;
     } else {
       redeemBox = `<p class="hint sect">${esc(t('redeemLow', minR, bal))}</p>`;
     }
   }
-  const away = free - net;
+  const away = free - basis;
   let promoBox = '';
   if (promoOn()) {
     const pm = S.promoMsg; S.promoMsg = '';
     promoBox = S.promo
-      ? `<div class="sect promo ok"><div class="promo-row"><span class="promo-tag">${esc(S.promo.code)}</span><b>${esc(t('promoOk', S.promo.code))}</b><button class="link" type="button" data-act="promoRm">${esc(t('promoRm'))}</button></div><p class="hint">${esc(S.promo.free_delivery ? t('promoFree') : t('promoSave', inr(disc)))}${S.promo.title ? ' · ' + esc(S.promo.title) : ''}</p></div>`
+      ? `<div class="sect promo ok"><div class="promo-row"><span class="promo-tag">${esc(S.promo.code)}</span><b>${esc(t('promoOk', S.promo.code))}</b><button class="link" type="button" data-act="promoRm">${esc(t('promoRm'))}</button></div><p class="hint">${esc(S.promo.free_delivery ? t('promoFree') : t('promoSave', inr(disc)))}${S.promo.title ? ' · ' + esc(S.promo.title) : ''}</p>${S.profile && !both ? `<p class="hint">${esc(t('promoNoPts'))}</p>` : ''}${flag('promo_earns_points', false) ? '' : `<p class="hint">${esc(t('promoNoEarn'))}</p>`}</div>`
       : `<div class="sect promo"><h4>${esc(t('promoTitle'))}</h4><div class="refbox"><input type="text" id="promoIn" maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${esc(t('promoPh'))}" aria-label="${esc(t('promoTitle'))}"><button class="btn line sm" type="button" data-act="promoApply">${esc(t('apply'))}</button></div><div class="msg err${pm ? ' show' : ''}" id="promoMsg" role="alert">${esc(pm || '')}</div></div>`;
   }
   dr.innerHTML = head(t('cart'), 'cartT') + `<div class="dr-body">${lines}${redeemBox}${promoBox}
     <div class="sum sect"><div><span>${esc(t('subtotal'))}</span><span>${inr(sub)}</span></div>
       ${disc ? `<div class="em"><span>${esc(t('promoLine', S.promo.code))}</span><span>−${inr(disc)}</span></div>` : ''}
-      ${S.redeem ? `<div class="em"><span>${esc(t('pointsUsed'))}</span><span>−${inr(S.redeem)}</span></div>` : ''}
+      ${S.redeem ? `<div class="em"><span>${esc(t('pointsUsed'))} (${S.redeem})</span><span>−${inr(rv)}</span></div>` : ''}
       <div><span>${esc(t('delivery'))}</span><span>${fee ? inr(fee) : esc(t('free'))}</span></div>
       <div class="tot"><span>${esc(t('total'))}</span><span>${inr(total)}</span></div></div>
-    <div class="fd" role="status"><div class="fd-bar"><i style="width:${Math.max(4, Math.min(100, Math.round(net / free * 100)))}%"></i></div><p class="hint">${esc(away > 0 ? t('freeAway', inr(away)) : t('freeYes'))}</p></div>
+    ${flag('free_nudge', true) || away <= 0 ? `<div class="fd" role="status"><div class="fd-bar"><i style="width:${Math.max(4, Math.min(100, Math.round(basis / free * 100)))}%"></i></div><p class="hint">${esc(away > 0 ? t('freeAway', inr(away)) : t('freeYes'))}</p></div>` : ''}
     ${checkoutHtml(p, total)}
     </div>`;
 }
@@ -748,7 +777,7 @@ function head(title, id) { return `<div class="dr-head"><h3 id="${id}">${esc(tit
 
 /* ---------- UPI pay card (shows only the default UPI ID the owner chose) ---------- */
 let upiInfo, qrLoad;
-function loadQR() { return qrLoad || (qrLoad = new Promise((ok, no) => { if (window.qrcode) return ok(); const el = document.createElement('script'); el.src = 'js/qr.js?v=20261013d'; el.onload = ok; el.onerror = no; document.head.appendChild(el); })); }
+function loadQR() { return qrLoad || (qrLoad = new Promise((ok, no) => { if (window.qrcode) return ok(); const el = document.createElement('script'); el.src = 'js/qr.js?v=20261013e'; el.onload = ok; el.onerror = no; document.head.appendChild(el); })); }
 async function fillUpi(o) {
   const box = $('#upiCard'); if (!box) return;
   try {
@@ -812,7 +841,7 @@ if (isIOS) document.addEventListener('DOMContentLoaded', showInstall);
 
 /* ---------- invoice ---------- */
 let invLib;
-function loadInvoice() { return invLib || (invLib = new Promise((ok, no) => { if (window.SVInvoice) return ok(); const el = document.createElement('script'); el.src = 'js/invoice.js?v=20261013d'; el.onload = ok; el.onerror = () => { invLib = null; no(); }; document.head.appendChild(el); })); }
+function loadInvoice() { return invLib || (invLib = new Promise((ok, no) => { if (window.SVInvoice) return ok(); const el = document.createElement('script'); el.src = 'js/invoice.js?v=20261013e'; el.onload = ok; el.onerror = () => { invLib = null; no(); }; document.head.appendChild(el); })); }
 function invBtns(no) {
   const b = (l, c, tx) => `<button type="button" class="${c}" data-inv="${esc(no)}" data-il="${l}">${esc(tx)}</button>`;
   return `<span class="inv-row">${lang === 'ta' ? b('ask', 'link', t('invDl')) : b('en', 'link', t('invDl')) + b('ta', 'link sm', t('invTa'))}</span>`;
@@ -825,7 +854,7 @@ function invoiceData(o) {
   const dbRow = !!o.order_items;
   const lines = dbRow ? o.order_items.map(i => ({ name: i.item_name, label: i.item_label, qty: i.qty, price: +i.unit_price })) : (o.lines || []);
   const subtotal = dbRow ? +o.subtotal : lines.reduce((a, l) => a + l.price * l.qty, 0);
-  const redeem = dbRow ? (o.points_redeemed || 0) : (o.redeem || 0);
+  const redeem = +o.points_value || (dbRow ? (o.points_redeemed || 0) : (o.redeem || 0) * pv());
   const promo = +o.promo_discount || 0;
   const fee = dbRow ? +o.delivery_fee : Math.max(0, +o.total - (subtotal - promo - redeem));
   return { no: o.order_no, dateStr: new Date(o.created_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
@@ -900,12 +929,14 @@ $('#cartDr').addEventListener('click', async e => {
     saveCart(); renderCartBadge(); renderCart(); return;
   }
   if (act === 'rdApply' || act === 'rdMax') {
-    const sub = cartSubtotal() - promoDisc(cartSubtotal()); const bal = S.profile.points_balance; const minR = setting('min_redeem_points', 400);
-    const v = act === 'rdMax' ? Math.min(bal, sub) : Math.floor(+$('#rdIn').value || 0);
+    const full = cartSubtotal(); const sub = full - promoDisc(full); const bal = S.profile.points_balance; const minR = minPts();
+    const maxP = Math.max(0, Math.min(bal, Math.floor(Math.min(ptsCap(full), sub) / pv())));
+    const v = act === 'rdMax' ? maxP : Math.floor(+$('#rdIn').value || 0);
     const m = $('#rdMsg');
+    if (S.promo && !flag('promo_with_points', false)) { m.textContent = t('ptsNoPromo'); m.classList.add('show'); return; }
     if (v < minR) { m.textContent = t('err.REDEEM_BELOW_MIN', minR); m.classList.add('show'); return; }
     if (v > bal) { m.textContent = t('err.REDEEM_EXCEEDS_BALANCE'); m.classList.add('show'); return; }
-    if (v > sub) { m.textContent = t('err.REDEEM_EXCEEDS_ORDER'); m.classList.add('show'); return; }
+    if (v > maxP) { m.textContent = t('err.REDEEM_EXCEEDS_LIMIT', maxPct()); m.classList.add('show'); return; }
     S.redeem = v; SFX.play('coin'); renderCart(); return;
   }
   if (act === 'rdClear') { S.redeem = 0; renderCart(); return; }
@@ -916,7 +947,7 @@ $('#cartDr').addEventListener('click', async e => {
     b.disabled = true; const sub = cartSubtotal();
     const { data, error } = await promoCheck(code, sub); b.disabled = false;
     if (error || !data) { m.textContent = errText(error); m.classList.add('show'); return; }
-    S.promo = Object.assign(data, { sub }); S.redeem = 0; SFX.play('coin'); renderCart(); return;
+    S.promo = Object.assign(data, { sub }); if (!flag('promo_with_points', false)) S.redeem = 0; SFX.play('coin'); renderCart(); return;
   }
   if (act === 'needLogin') { openAccount('in'); return; }
   if (act === 'guestGo') { guestMode = true; renderCart(); return; }
@@ -1085,7 +1116,7 @@ function renderAccount() {
     </div>`;
     return;
   }
-  const p = S.profile; const ti = tierInfo(+p.lifetime_spend); const minR = setting('min_redeem_points', 400);
+  const p = S.profile; const ti = tierInfo(+p.lifetime_spend); const minR = minPts();
   const progress = ti.next ? Math.min(100, Math.round(((+p.lifetime_spend - ti.cur.min) / (ti.next.min - ti.cur.min)) * 100)) : 100;
   const link = location.origin + location.pathname + '?ref=' + p.referral_code;
   const waText = encodeURIComponent(L(`I order my oils from Sri Vinayaga Oil & Flour Mills, Trichy. Join with my code ${p.referral_code} and we both earn points: ${link}`, `நான் திருச்சி ஸ்ரீ விநாயகா ஆயில் & ஃப்ளோர் மில்ஸில் எண்ணெய் வாங்குகிறேன். என் குறியீடு ${p.referral_code} மூலம் இணைந்தால் இருவருக்கும் புள்ளிகள்: ${link}`));
@@ -1093,7 +1124,7 @@ function renderAccount() {
   const role = p.role && p.role !== 'customer';
   dr.innerHTML = head(t('myAccount'), 'acctT') + `<div class="dr-body">
     <div class="acct-top"><div style="opacity:.85;font-size:14px">${esc(t('welcome', (p.full_name || '').split(' ')[0] || ''))}</div>
-      <div class="bigpts">${(p.points_balance || 0).toLocaleString('en-IN')}</div><div>${esc(t('yourPoints'))}</div>
+      <div class="bigpts">${(p.points_balance || 0).toLocaleString('en-IN')}</div><div>${esc(t('yourPoints'))} · ${esc(t('ptsWorth', inr((p.points_balance || 0) * pv())))}</div>
       <div class="bar"><i style="width:${progress}%;background:var(--gold-bright)"></i></div>
       <div style="font-size:14px">${esc(t('tierNow', pct(ti.cur.rate)))} ${ti.next ? esc(t('tierNext', inr(ti.next.min - p.lifetime_spend), pct(ti.next.rate))) : esc(t('tierTop'))}</div>
       <div style="font-size:13.5px;opacity:.8;margin-top:4px">${esc(t('lifetime', inr(p.lifetime_spend)))}</div>
@@ -1259,17 +1290,17 @@ $('#combos').addEventListener('click', e => {
 /* ---------- rewards ---------- */
 function renderRewards() {
   if (!S.loaded) return;
-  const minR = setting('min_redeem_points', 400);
+  const minR = minPts();
   $('#rwLead').textContent = t('rewardsLead');
   const tiers = tierInfo(0).tiers;
   $('#tiers').innerHTML = tiers.map(x => `<div class="tier"><b>${pct(x.rate)}</b><span>${esc(x.min ? t('tierFrom', inr(x.min)) : t('tierFirst'))}</span></div>`).join('');
   const credit = setting('credit_points_on', 'delivered') === 'placed' ? t('ruleCreditPlaced') : t('ruleCredit');
-  const rules = `<ul><li>${esc(credit)}</li><li>${esc(t('ruleRedeem', minR))}</li><li>${esc(t('ruleRefer', setting('referral_referrer_points', 150), setting('referral_friend_points', 100)))}</li></ul>`;
+  const rules = `<ul><li>${esc(credit)}</li><li>${esc(t('ruleRedeem', pvTxt(), minR, maxPct() + '%'))}</li><li>${esc(t('ruleRefer', setting('referral_referrer_points', 150), setting('referral_friend_points', 100)))}</li></ul>`;
   const p = S.profile;
   if (p) {
     const ti = tierInfo(+p.lifetime_spend);
     const progress = ti.next ? Math.min(100, Math.round(((+p.lifetime_spend - ti.cur.min) / (ti.next.min - ti.cur.min)) * 100)) : 100;
-    $('#rwCard').innerHTML = `<h3>${esc(t('yourPoints'))}</h3><div class="bigpts">${(p.points_balance || 0).toLocaleString('en-IN')}</div>
+    $('#rwCard').innerHTML = `<h3>${esc(t('yourPoints'))}</h3><div class="bigpts">${(p.points_balance || 0).toLocaleString('en-IN')}</div><div style="font-size:14.5px;color:#DCE7DF">${esc(t('ptsWorth', inr((p.points_balance || 0) * pv())))}</div>
       <div class="bar"><i style="width:${progress}%"></i></div><div style="font-size:14.5px;color:#DCE7DF">${esc(t('tierNow', pct(ti.cur.rate)))} ${ti.next ? esc(t('tierNext', inr(ti.next.min - p.lifetime_spend), pct(ti.next.rate))) : esc(t('tierTop'))}</div>
       ${rules}<button class="btn gold" id="rwOpen">${esc(t('myAccount'))}</button>`;
     $('#rwOpen').onclick = () => openAccount();
@@ -1536,3 +1567,11 @@ function buildPath(tl) {
 }
 })();
 
+
+/* pinch-zoom stays on everywhere except the product cards, the product buy box and the cart / checkout drawer */
+(function () {
+  const Z = '.card, .pp-buy, #cartDr, .stick';
+  const inZone = e => e.target && e.target.closest && e.target.closest(Z);
+  document.addEventListener('touchmove', e => { if (e.touches && e.touches.length > 1 && inZone(e)) e.preventDefault(); }, { passive: false });
+  ['gesturestart', 'gesturechange'].forEach(ev => document.addEventListener(ev, e => { if (inZone(e)) e.preventDefault(); }));
+})();
