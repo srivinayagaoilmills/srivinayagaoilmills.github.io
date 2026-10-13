@@ -152,6 +152,7 @@ const TABS = [
   { id: 'products', label: 'Products and prices', roles: ED },
   { id: 'combos', label: 'Combos', roles: ED },
   { id: 'offers', label: 'Offers and specials', roles: ED },
+  { id: 'promos', label: 'Promo codes', roles: ['owner'] },
   { id: 'hero', label: 'Home banners', roles: ED },
   { id: 'festival', label: 'Festival', roles: ED },
   { sep: 'Owner only', roles: ['owner'] },
@@ -258,7 +259,7 @@ function orderHtml(o) {
     <div class="a-og">
       <div><h4>Customer</h4><b>${esc(o.customer_name)}</b><br><a href="tel:+91${esc(o.phone)}">${esc(o.phone)}</a> · <a href="https://wa.me/91${esc(o.phone)}" target="_blank" rel="noopener">WhatsApp</a><br>${esc(o.address)}<br>${esc(o.pincode)}${o.notes ? `<br><i>Note: ${esc(o.notes)}</i>` : ''}</div>
       <div><h4>Items</h4><ul>${items}</ul><div style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px">
-        Subtotal ${inr(o.subtotal)}${o.points_redeemed ? ` · points used −${inr(o.points_redeemed)}` : ''} · delivery ${o.delivery_fee ? inr(o.delivery_fee) : 'free'}<br><b>Total ${inr(o.total)}</b></div></div>
+        Subtotal ${inr(o.subtotal)}${+o.promo_discount ? ` · promo ${esc(o.promo_code || '')} −${inr(o.promo_discount)}` : ''}${o.points_redeemed ? ` · points used −${inr(o.points_redeemed)}` : ''} · delivery ${o.delivery_fee ? inr(o.delivery_fee) : 'free'}<br><b>Total ${inr(o.total)}</b></div></div>
       <div><h4>Payment</h4>${o.payment_mode === 'online' ? 'Online' : 'Offline'} · <span class="pill-s ${o.payment_status === 'paid' ? 'on' : 'warn'}">${o.payment_status === 'paid' ? 'Paid' : 'Pending'}</span>
         ${call ? '<p class="a-hint" style="margin-top:8px">Call the customer to collect payment.</p>' : ''}
         <h4 style="margin-top:10px">Points</h4>${o.points_credited ? `${o.points_earned} credited` : `about ${o.points_estimate} when delivered`}</div>
@@ -344,7 +345,8 @@ VIEWS.products = async el => {
       for (const id of dirty) {
         const tr = $(`tr[data-v="${id}"]`, el); const num = n => { const v = $(`[name=${n}]`, tr).value; return v === '' ? null : Number(v); };
         const price = num('price'); if (price == null || price < 0) { toast('Enter a valid price'); btn.disabled = false; return; }
-        await q(sb.from('variants').update({ price, stock: num('stock'), max_online_qty: num('max'), is_active: $('[name=act]', tr).checked }).eq('id', id));
+        const mrp = num('mrp'); if (mrp != null && mrp < price) { toast('MRP cannot be lower than the selling price'); btn.disabled = false; return; }
+        await q(sb.from('variants').update({ price, mrp, stock: num('stock'), max_online_qty: num('max'), is_active: $('[name=act]', tr).checked }).eq('id', id));
       }
       toast('Saved ' + dirty.size + ' change' + (dirty.size > 1 ? 's' : '')); go('products', true); return;
     }
@@ -361,8 +363,8 @@ function productHtml(p) {
   const vs = (p.variants || []).slice().sort((a, b) => a.sort_order - b.sort_order);
   return `<article class="a-pr ${p.is_active ? '' : 'off'}" data-p="${p.id}"><img src="${esc(previewSrc(p.image_url))}" alt="">
     <div><h3>${esc(p.name_en)} <span class="tam" style="font-size:20px;color:var(--muted)">${esc(p.name_ta)}</span> ${p.is_active ? '' : '<span class="pill-s">Hidden</span>'} ${p.is_signature ? '<span class="pill-s warn">Signature</span>' : ''}</h3>
-      <div class="a-scroll" style="margin:10px 0"><table class="a-t"><thead><tr><th>Pack</th><th>Price (₹)</th><th>Stock</th><th>Online limit</th><th>On sale</th><th></th></tr></thead><tbody>
-      ${vs.map(v => `<tr data-v="${v.id}"><td><b>${esc(v.label)}</b></td><td><input type="number" name="price" value="${v.price}" min="0" step="1"></td><td><input type="number" name="stock" value="${v.stock ?? ''}" min="0" placeholder="not counted"></td><td><input type="number" name="max" value="${v.max_online_qty ?? ''}" min="1" placeholder="no limit"></td><td><input type="checkbox" name="act" ${v.is_active ? 'checked' : ''} aria-label="On sale"></td><td style="white-space:nowrap"><button class="btn line sm" data-act="editV" data-v="${v.id}">Edit</button> <button class="btn line sm" data-act="delV" data-v="${v.id}" style="color:var(--bad)">Delete</button></td></tr>`).join('')}</tbody></table></div>
+      <div class="a-scroll" style="margin:10px 0"><table class="a-t"><thead><tr><th>Pack</th><th>MRP (₹)</th><th>Selling price (₹)</th><th>Stock</th><th>Online limit</th><th>On sale</th><th></th></tr></thead><tbody>
+      ${vs.map(v => `<tr data-v="${v.id}"><td><b>${esc(v.label)}</b></td><td><input type="number" name="mrp" value="${v.mrp ?? ''}" min="0" step="1" placeholder="none"></td><td><input type="number" name="price" value="${v.price}" min="0" step="1"></td><td><input type="number" name="stock" value="${v.stock ?? ''}" min="0" placeholder="not counted"></td><td><input type="number" name="max" value="${v.max_online_qty ?? ''}" min="1" placeholder="no limit"></td><td><input type="checkbox" name="act" ${v.is_active ? 'checked' : ''} aria-label="On sale"></td><td style="white-space:nowrap"><button class="btn line sm" data-act="editV" data-v="${v.id}">Edit</button> <button class="btn line sm" data-act="delV" data-v="${v.id}" style="color:var(--bad)">Delete</button></td></tr>`).join('')}</tbody></table></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn line sm" data-act="addV">Add a pack size</button><button class="btn line sm" data-act="editP">Edit product details</button><button class="btn line sm" data-act="delP" style="color:var(--bad)">Delete product</button></div></div></article>`;
 }
 function productForm(p, order) {
@@ -388,7 +390,8 @@ function variantForm(p, v) {
     title: v ? 'Edit pack size' : 'Add a pack size for ' + p.name_en, values: v || { pack_kind: 'bottle', sort_order: (p.variants.length || 0) + 1, price: 999, is_active: true },
     fields: [
       { k: 'label', label: 'Pack name', req: true, half: true, hint: 'For example: 500 ml, 5 L can, 15 kg tin' }, { k: 'pack_kind', label: 'Type', type: 'select', opts: PACK, half: true },
-      { k: 'price', label: 'Price (₹)', type: 'number', req: true, half: true }, { k: 'sort_order', label: 'Position', type: 'number', half: true },
+      { k: 'mrp', label: 'MRP (₹)', type: 'number', half: true, hint: 'Shown crossed out. Leave empty for none' }, { k: 'price', label: 'Selling price (₹)', type: 'number', req: true, half: true },
+      { k: 'sort_order', label: 'Position', type: 'number', half: true },
       { k: 'stock', label: 'Stock', type: 'number', half: true, hint: 'Leave empty to not count' }, { k: 'max_online_qty', label: 'Online limit', type: 'number', half: true, hint: 'Leave empty for no limit' },
       { k: 'is_active', label: 'On sale', type: 'check' }
     ],
@@ -465,6 +468,66 @@ VIEWS.offers = async el => {
     const card = e.target.closest('.a-item'); if (!card) return; const o = offers.find(x => x.id === card.dataset.id);
     if (e.target.matches('[data-edit]')) edit(o);
     if (e.target.matches('[data-del]') && await ask('Delete this offer?', o.title_en, 'Delete', true)) { await q(sb.from('offers').delete().eq('id', o.id)); toast('Deleted'); go('offers', true); }
+  });
+};
+VIEWS.promos = async el => {
+  const [codes, used, st] = await Promise.all([
+    q(sb.from('promo_codes').select('*').order('created_at', { ascending: false })),
+    q(sb.from('orders').select('promo_code, promo_discount, status').not('promo_code', 'is', null)),
+    q(sb.from('site_settings').select('value').eq('key', 'promo_enabled'))
+  ]);
+  const on = !!(st[0] && (st[0].value === true || st[0].value === 'true' || st[0].value === 'on'));
+  const useOf = c => { const u = used.filter(o => o.promo_code === c.code && o.status !== 'cancelled'); return { n: u.length, off: u.reduce((a, o) => a + Number(o.promo_discount || 0), 0) }; };
+  const inr = n => '₹' + Number(n || 0).toLocaleString('en-IN');
+  const what = c => c.kind === 'percent' ? c.value + '% off' + (c.max_discount ? ' (up to ' + inr(c.max_discount) + ')' : '') : c.kind === 'flat' ? inr(c.value) + ' off' : 'Free delivery';
+  const when = c => { const f = d => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); const now = Date.now();
+    if (c.ends_at && new Date(c.ends_at) < now) return '<span class="pill-s warn">Ended ' + f(c.ends_at) + '</span>';
+    if (c.starts_at && new Date(c.starts_at) > now) return 'Starts ' + f(c.starts_at);
+    return c.ends_at ? 'Until ' + f(c.ends_at) : 'No end date'; };
+  el.innerHTML = `<div class="a-panel"><h3>Promo codes at checkout</h3>
+      <label class="chk" style="display:flex;gap:10px;align-items:center;font-weight:600"><input type="checkbox" id="promoOn" ${on ? 'checked' : ''}> Show the promo code box at checkout</label>
+      <p class="hint" style="margin-top:8px">${on ? 'ON: customers see a "Have a promo code?" box in the cart. Only codes marked Active below work.' : 'OFF: customers do not see any promo code box, and no code can be used, even if codes exist below.'}</p></div>
+    <div class="a-toolbar"><button class="btn" id="add">Add a promo code</button></div>
+    ${codes.length ? `<div class="a-scroll"><table class="a-t"><thead><tr><th>Code</th><th>Offer</th><th>Minimum order</th><th>Valid</th><th>Used</th><th>Active</th><th></th></tr></thead><tbody>
+      ${codes.map(c => { const u = useOf(c); return `<tr data-id="${c.id}"><td><b style="font-family:var(--f-mono,monospace);letter-spacing:.04em">${esc(c.code)}</b>${c.title ? `<br><small class="hint">${esc(c.title)}</small>` : ''}</td><td>${esc(what(c))}</td><td>${c.min_order ? inr(c.min_order) : 'None'}</td><td>${when(c)}</td>
+        <td>${u.n}${c.usage_limit ? ' of ' + c.usage_limit : ''}${u.n ? `<br><small class="hint">${inr(u.off)} given</small>` : ''}${c.per_phone_limit ? `<br><small class="hint">${c.per_phone_limit} per phone</small>` : ''}</td>
+        <td>${c.is_active ? '<span class="pill-s">Active</span>' : '<span class="pill-s warn">Off</span>'}</td><td style="white-space:nowrap"><button class="btn line sm" data-edit>Edit</button> <button class="btn line sm" data-del style="color:var(--bad)">Delete</button></td></tr>`; }).join('')}
+      </tbody></table></div>` : '<p class="a-hint">No promo codes yet. Add one, then switch the box on above.</p>'}`;
+  const edit = c => formModal({
+    title: c ? 'Edit promo code' : 'Add a promo code', values: c || { kind: 'percent', is_active: true, min_order: 0 },
+    fields: [
+      { k: 'code', label: 'Code', req: true, half: true, hint: 'Letters, numbers, - or _. Customers can type it in any case.' }, { k: 'title', label: 'Name (only you see this)', half: true, nullable: true, hint: 'For example: Diwali offer' },
+      { k: 'kind', label: 'Offer type', type: 'select', opts: [['percent', 'Percent off the goods'], ['flat', 'Fixed amount off (₹)'], ['free_delivery', 'Free delivery']], half: true },
+      { k: 'value', label: 'Value', type: 'number', half: true, hint: 'Percent (for example 10) or rupees (for example 50). Leave empty for free delivery.' },
+      { k: 'max_discount', label: 'Highest discount (₹)', type: 'number', half: true, hint: 'Optional cap, mainly for percent offers' }, { k: 'min_order', label: 'Minimum order (₹)', type: 'number', half: true, hint: 'Goods total before delivery. 0 for none.' },
+      { k: 'starts_at', label: 'Starts (optional)', type: 'datetime', half: true }, { k: 'ends_at', label: 'Ends (optional)', type: 'datetime', half: true },
+      { k: 'usage_limit', label: 'Total uses allowed', type: 'number', half: true, hint: 'Empty for unlimited' }, { k: 'per_phone_limit', label: 'Uses per phone number', type: 'number', half: true, hint: 'Empty for unlimited. Use 1 for one-time offers.' },
+      { k: 'is_active', label: 'Active', type: 'check' }
+    ],
+    onSave: async v => {
+      v.code = String(v.code || '').trim().toUpperCase();
+      if (!/^[A-Z0-9_-]{3,24}$/.test(v.code)) throw new Error('The code must be 3 to 24 letters, numbers, - or _.');
+      v.value = v.value == null ? 0 : v.value;
+      if (v.kind === 'percent' && !(v.value > 0 && v.value <= 100)) throw new Error('For a percent offer, enter a value between 1 and 100.');
+      if (v.kind === 'flat' && !(v.value > 0)) throw new Error('For a fixed amount offer, enter the rupees off.');
+      if (v.kind === 'free_delivery') { v.value = 0; v.max_discount = null; }
+      v.min_order = v.min_order == null ? 0 : v.min_order;
+      if (v.starts_at && v.ends_at && new Date(v.ends_at) < new Date(v.starts_at)) throw new Error('The end date is before the start date.');
+      try { if (c) await q(sb.from('promo_codes').update(v).eq('id', c.id)); else await q(sb.from('promo_codes').insert(v)); }
+      catch (x) { throw new Error(/duplicate|unique/i.test(x.message || '') ? 'That code already exists.' : x.message); }
+      toast('Saved'); go('promos', true);
+    }
+  });
+  el.onclick = run(async e => {
+    if (e.target.id === 'add') return edit(null);
+    const row = e.target.closest('tr[data-id]'); if (!row) return; const c = codes.find(x => x.id === row.dataset.id);
+    if (e.target.matches('[data-edit]')) edit(c);
+    if (e.target.matches('[data-del]') && await ask('Delete ' + c.code + '?', 'The code stops working. Past orders keep their record of it.', 'Delete', true)) { await q(sb.from('promo_codes').delete().eq('id', c.id)); toast('Deleted'); go('promos', true); }
+  });
+  el.onchange = run(async e => {
+    if (e.target.id !== 'promoOn') return;
+    await q(sb.from('site_settings').upsert([{ key: 'promo_enabled', value: e.target.checked }], { onConflict: 'key' }));
+    toast(e.target.checked ? 'Promo code box is ON' : 'Promo code box is OFF'); go('promos', true);
   });
 };
 VIEWS.hero = async el => {
